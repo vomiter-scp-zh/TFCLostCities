@@ -30,6 +30,7 @@
     "worldgen.remap.LostCityTerrainFeature_TFCRandomVegetationMixin",
     "worldgen.water.LostCityTerrainFeature_NoFluidSmoothingMixin",
     "worldgen.water.LostCityTerrainFeature_SaltWaterSupportMixin",
+    "worldgen.water.Railways_AdaptTFCWaterMixin",
     "worldgen.water.Scattered_RepeatSliceMixin"
   ],
   "client": [
