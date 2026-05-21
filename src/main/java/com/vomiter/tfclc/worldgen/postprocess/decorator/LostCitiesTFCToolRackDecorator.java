@@ -9,6 +9,7 @@ import net.dries007.tfc.common.blockentities.ToolRackBlockEntity;
 import net.dries007.tfc.common.blocks.TFCBlocks;
 import net.dries007.tfc.common.blocks.wood.ToolRackBlock;
 import net.dries007.tfc.common.blocks.wood.Wood;
+import net.dries007.tfc.common.recipes.ingredients.BlockIngredient;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -24,6 +25,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +39,12 @@ public final class LostCitiesTFCToolRackDecorator {
         Registries.ITEM,
             Helpers.id("tfc", "usable_on_tool_rack")
     );
+
+    private static final TagKey<Item> NOT_TOOL_RACK_ITEMS = TagKey.create(
+            Registries.ITEM,
+            Helpers.id("tfclc", "old_tool_rack_items_blacklist")
+    );
+
 
     private static final Wood[] RACK_WOODS = new Wood[] {
         Wood.OAK,
@@ -94,7 +102,7 @@ public final class LostCitiesTFCToolRackDecorator {
             }
 
             if (tryPlaceToolRack(level, pos, facing, random, itemPool)) {
-                TFCLostCities.LOGGER.info("[TFCLC] RACK PLACED AT　{}", pos);
+                TFCLostCities.LOGGER.debug("[TFCLC] RACK PLACED AT　{}", pos);
                 placed++;
             }
         }
@@ -134,7 +142,7 @@ public final class LostCitiesTFCToolRackDecorator {
                 ItemStack stack = original.copy();
                 stack.setCount(1);
 
-                // 舊工具比較自然
+                // 舊工具
                 if (stack.isDamageableItem()) {
                     int maxDamage = stack.getMaxDamage();
                     if (maxDamage > 8) {
@@ -183,14 +191,12 @@ public final class LostCitiesTFCToolRackDecorator {
             if (!supportState.isFaceSturdy(level, supportPos, facing)) {
                 continue;
             }
-
-            // 前方至少留一格空氣，避免掛在超窄夾層
-            if (!frontState.isAir()) {
+            if (supportState.is(Tags.Blocks.GLASS)) {
                 continue;
             }
 
-            // 避免貼窗：若支撐牆後面又是空氣，通常不是正常內牆
-            if (level.getBlockState(supportPos.relative(facing.getOpposite())).isAir()) {
+            // 前方至少留一格空氣，避免掛在超窄夾層
+            if (!frontState.isAir()) {
                 continue;
             }
 
@@ -234,7 +240,9 @@ public final class LostCitiesTFCToolRackDecorator {
                 if (item == null || item == Items.AIR) {
                     continue;
                 }
-                result.add(new ItemStack(item));
+                var stack = new ItemStack(item);
+                if(stack.is(NOT_TOOL_RACK_ITEMS)) continue;
+                result.add(stack);
             }
         });
 
