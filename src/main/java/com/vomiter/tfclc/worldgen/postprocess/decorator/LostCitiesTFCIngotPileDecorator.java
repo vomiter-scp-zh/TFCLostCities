@@ -189,7 +189,7 @@ public final class LostCitiesTFCIngotPileDecorator {
     }
 
     /**
-     * 很粗略的 basement heuristic：
+     * 很粗略的 basement 粗判：
      * 1. 目前位置可站立
      * 2. 頭上至少有空間
      * 3. 周圍有一定比例不是空氣，避免插到露天坑洞

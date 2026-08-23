@@ -21,7 +21,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class LostCityTerrainFeature_TFCVesselLootMixin {
 
     @Shadow @Final public IDimensionInfo provider;
-    @Shadow @Final public RandomSource rand;
 
     @Inject(
             method = "generateLoot",

@@ -33,7 +33,7 @@ public final class LostCitiesTFCLocalFloraHelper {
 
         final RandomSource random = level.getRandom();
 
-        // 植被密度放高：森林越密，越常嘗試
+        // 植被密度放高，越常嘗試
         int tries = 1;
         if (forestDensity > 0.2f) tries++;
         if (forestDensity > 0.45f) tries++;
@@ -52,7 +52,7 @@ public final class LostCitiesTFCLocalFloraHelper {
             }
         }
 
-        // 保底：真的都放不上去時，再試幾個很泛用的草
+        // 真的都放不上去時，再試幾個很泛用的草
         Plant[] fallback = new Plant[] {
                 Plant.BLUEGRASS,
                 Plant.BROMEGRASS,
@@ -71,7 +71,7 @@ public final class LostCitiesTFCLocalFloraHelper {
 
     private static Plant pickPlant(RandomSource random, float rainfall, float avgTemp, ForestType forestType, float forestDensity) {
         // 先粗分 climate / forest 語意，再隨機挑候選。
-        // 數值門檻不是 TFC 原版 feature 的精確重演，而是用 ChunkData 做接近 TFC 世界觀的局部補植。
+        // 數值門檻不是 TFC 原版 feature 的精確重演，而是用 ChunkData 做接近 TFC 世界觀的局部補植
 
         // 冷涼潮濕森林
         if (avgTemp < 8f) {

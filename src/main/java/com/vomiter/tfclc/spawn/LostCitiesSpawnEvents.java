@@ -101,7 +101,7 @@ public final class LostCitiesSpawnEvents {
 
         // LC 的 city level 轉實際高度：
         // getRealHeight(level) = groundLevel + 6 * level
-        // 這個值是「樓板高度」，實際站立空間通常是 +1
+        // 這個值是樓板高度，實際站立空間通常是 +1
         final int cityGroundY = lostInfo.getRealHeight(chunkInfo.getCityLevel());
         final int allowedFeetY = cityGroundY + 1;
         TFCLostCities.LOGGER.info("[TFCLC] city ground = {}", cityGroundY);

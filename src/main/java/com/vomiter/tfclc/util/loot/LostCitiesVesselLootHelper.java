@@ -49,7 +49,6 @@ public final class LostCitiesVesselLootHelper {
                 }
                 ItemStack remain = ItemHandlerHelper.insertItemStacked(handler, stack.copy(), false);
 
-                // 先保守：overflow 直接忽略，不在初始化期丟實體
                 if (!remain.isEmpty()) {
                     // no-op
                 }

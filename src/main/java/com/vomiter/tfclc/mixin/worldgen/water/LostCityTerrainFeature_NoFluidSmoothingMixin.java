@@ -17,16 +17,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class LostCityTerrainFeature_NoFluidSmoothingMixin {
 
     @Shadow @Final
-    public ChunkDriver driver;
-    @Shadow @Final
     public IDimensionInfo provider;
+
+    @Shadow
+    public abstract ChunkDriver getDriver();
 
     @Unique
     private boolean tfclc$hasFluidInRange(int x, int z, int y1, int y2) {
         int min = Math.max(provider.getWorld().getMinBuildHeight(), Math.min(y1, y2));
         int max = Math.min(provider.getWorld().getMaxBuildHeight() - 1, Math.max(y1, y2));
         for (int y = min; y <= max; y++) {
-            BlockState state = driver.getBlock(x, y, z);
+            BlockState state = getDriver().getBlock(x, y, z);
             FluidState fluid = state.getFluidState();
             if (!fluid.isEmpty()) {
                 return true;

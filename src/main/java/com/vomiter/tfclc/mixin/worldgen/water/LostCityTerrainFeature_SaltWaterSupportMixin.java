@@ -16,8 +16,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = LostCityTerrainFeature.class, remap = false)
 public abstract class LostCityTerrainFeature_SaltWaterSupportMixin {
-    @Shadow @Final public ChunkDriver driver;
     @Shadow private BlockState base;
+
+    @Shadow
+    public abstract ChunkDriver getDriver();
 
     @Inject(
         method = "generateBorderSupport",
@@ -33,6 +35,7 @@ public abstract class LostCityTerrainFeature_SaltWaterSupportMixin {
         ChunkHeightmap heightmap,
         CallbackInfo ci
     ) {
+        var driver = getDriver();
         int y = driver.getY();
         TFCLostCities.LOGGER.info("[TFCLC][Support] {}", driver.getBlock());
         int height = heightmap.getHeight();

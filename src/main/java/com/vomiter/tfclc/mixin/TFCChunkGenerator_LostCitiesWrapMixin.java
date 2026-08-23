@@ -136,7 +136,7 @@ public abstract class TFCChunkGenerator_LostCitiesWrapMixin {
             return true;
         }
 
-        // TFC 樹系 feature：直接用 type 判斷
+        // TFC 樹系 feature
         return feature instanceof ForestFeature
                 || feature instanceof FruitTreeFeature
                 || feature instanceof RandomTreeFeature

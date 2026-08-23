@@ -42,7 +42,7 @@ public final class LostCitiesBookshelfFacingHelper {
 
     /**
      * facing = 書架正面朝向
-     * 希望：正面開闊，背面靠牆
+     * 正面開闊，背面靠牆
      */
     private static int scoreFacing(BlockGetter level, BlockPos pos, Direction facing) {
         int score = 0;
@@ -70,7 +70,7 @@ public final class LostCitiesBookshelfFacingHelper {
             score -= 20;
         }
 
-        // 正前方的開闊程度，近似「朝房間中心」
+        // 正前方的開闊程度
         score += opennessScore(level, pos, facing, 4);
 
         // 側邊太擠稍微扣分

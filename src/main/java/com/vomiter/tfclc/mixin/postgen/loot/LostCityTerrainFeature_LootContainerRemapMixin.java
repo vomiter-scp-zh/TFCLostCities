@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class LostCityTerrainFeature_LootContainerRemapMixin {
 
     @WrapOperation(
-            method = "lambda$handleLoot$10",
+            method = "lambda$handleLoot$9",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/level/WorldGenLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z",

@@ -48,7 +48,7 @@ apply from: 'gradle/optional-dep.gradle'
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor("org.spongepowered:mixin:${mixin_version}:processor")
-    implementation fg.deobf("curse.maven:the-lost-cities-269024:7432706")
+    implementation fg.deobf("curse.maven:the-lost-cities-269024:8644739")
 }
 
 //devRuntime.project(":common", true)
