@@ -106,12 +106,15 @@ public final class LostCitiesWoodRemapper {
             return null;
         }
 
+        /*
         if (ModList.get().isLoaded(AFC_MOD_ID)) {
             final Block afc = mapToAFC(mapping);
             if (afc != null) {
                 return afc;
             }
         }
+
+         */
 
         return mapToTFC(mapping);
     }
@@ -135,32 +138,5 @@ public final class LostCitiesWoodRemapper {
             case PRESSURE_PLATE -> TFCBlocks.WOODS.get(wood).get(Wood.BlockType.PRESSURE_PLATE).get();
             default -> TFCBlocks.WOODS.get(wood).get(Wood.BlockType.valueOf(mapping.productType().name())).get();
         };
-    }
-
-    @Nullable
-    public static Block mapToAFC(VanillaWoodMapping mapping) {
-        final String speciesPath = switch (mapping.species()) {
-            case OAK -> "oak";
-            case SPRUCE -> "spruce";
-            case BIRCH -> "birch";
-            case JUNGLE -> "jungle";
-            case ACACIA -> "acacia";
-            case DARK_OAK -> "dark_oak";
-            case CHERRY -> "cherry";
-            case MANGROVE -> "mangrove";
-        };
-
-        final String suffix = switch (mapping.productType()) {
-            case SAPLING -> mapping.species() == VanillaWoodSpecies.MANGROVE ? "propagule" : "sapling";
-            case DOOR -> "door";
-            default -> mapping.productType().name().toLowerCase(Locale.ROOT);
-        };
-
-        return findBlock(AFC_MOD_ID, speciesPath + "_" + suffix);
-    }
-
-    @Nullable
-    private static Block findBlock(String namespace, String path) {
-        return ForgeRegistries.BLOCKS.getValue(Helpers.id(namespace, path));
     }
 }

@@ -1,7 +1,7 @@
 package com.vomiter.tfclc.mixin.postgen.street;
 
 import com.vomiter.tfclc.util.LostCitiesTFCLocalFloraHelper;
-import com.vomiter.tfclc.util.LostCitiesTFCSoilHelper;
+import com.vomiter.tfclc.worldgen.remapper.LostCitiesTFCSoilHelper;
 import com.vomiter.tfclc.worldgen.postprocess.LostCitiesPostProcessTracker;
 import com.vomiter.tfclc.worldgen.postprocess.street.PendingPreservedSurfaceKind;
 import mcjty.lostcities.varia.ChunkCoord;

@@ -34,7 +34,7 @@ public class TFCLostCities
         modBus.addListener(this::commonSetup);
         modBus.addListener(ModDataGenerator::generateData);
         ModRegistries.register(modBus);
-        context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        context.registerConfig(ModConfig.Type.COMMON, TFCLCConfig.SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)

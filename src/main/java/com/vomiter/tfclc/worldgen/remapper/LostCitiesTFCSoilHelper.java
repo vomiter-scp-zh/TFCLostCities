@@ -1,4 +1,4 @@
-package com.vomiter.tfclc.util;
+package com.vomiter.tfclc.worldgen.remapper;
 
 import net.dries007.tfc.common.blocks.TFCBlocks;
 import net.dries007.tfc.common.blocks.soil.ConnectedGrassBlock;
@@ -27,18 +27,12 @@ public final class LostCitiesTFCSoilHelper {
 
     static {
         for (SoilBlockType type : SoilBlockType.values()) {
-            if (!TFCBlocks.SOIL.containsKey(type)) {
-                continue;
-            }
             for (Map.Entry<SoilBlockType.Variant, ? extends RegistryObject<Block>> entry : TFCBlocks.SOIL.get(type).entrySet()) {
                 Block block = entry.getValue().get();
                 BLOCK_TO_VARIANT.put(block, entry.getKey());
                 BLOCK_TO_TYPE.put(block, type);
             }
         }
-    }
-
-    private LostCitiesTFCSoilHelper() {
     }
 
     public static BlockState remapVanillaSurface(BlockState original, LevelAccessor level, BlockPos pos) {

@@ -4,10 +4,9 @@
   "package": "com.vomiter.tfclc.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "BiomeMatcherMixin",
+    "BuildingInfoMixin",
     "NaturalSpawner_LCRoofSpawnMixin",
     "TFCChunkGenerator_LostCitiesDebugMixin",
-    "TFCChunkGenerator_LostCitiesWrapMixin",
     "postgen.ChunkFixer_PostProcessSpecialBEMixin",
     "postgen.decoration.ChunkFixer_TFCMetalPileDecoratorMixin",
     "postgen.decoration.ChunkFixer_TFCToolRackDecoratorMixin",

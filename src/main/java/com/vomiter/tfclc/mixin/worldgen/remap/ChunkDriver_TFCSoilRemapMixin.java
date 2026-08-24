@@ -1,6 +1,6 @@
 package com.vomiter.tfclc.mixin.worldgen.remap;
 
-import com.vomiter.tfclc.util.LostCitiesTFCSoilHelper;
+import com.vomiter.tfclc.worldgen.remapper.LostCitiesTFCSoilHelper;
 import mcjty.lostcities.worldgen.ChunkDriver;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
