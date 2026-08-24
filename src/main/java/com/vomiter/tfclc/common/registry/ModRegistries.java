@@ -24,7 +24,7 @@ public class ModRegistries {
 
     public static void register(IEventBus modBus){
         add(ModItems.ITEMS);
-        add(ModBlocks.BLOCKS);
+        add(TFCLCBlocks.BLOCKS);
         for (DeferredRegister<?> registry : REGISTRIES) {
             registry.register(modBus);
         }

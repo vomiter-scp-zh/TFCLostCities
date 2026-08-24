@@ -21,6 +21,7 @@
     "postgen.street.LostCityTerrainFeature_StreetVoidContextMixin",
     "worldgen.BuildingInfoMixin_IsOcean",
     "worldgen.Scattered_ValidMixin",
+    "worldgen.padding.LostCityTerrainFeature_PaddingMixin",
     "worldgen.remap.BuildingInfo_TFCDoorMixin",
     "worldgen.remap.ChunkDriver_TFCGeneralRemapMixin",
     "worldgen.remap.ChunkDriver_TFCSoilRemapMixin",
