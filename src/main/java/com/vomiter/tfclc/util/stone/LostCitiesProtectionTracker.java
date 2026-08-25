@@ -13,6 +13,8 @@ import java.util.Map;
 public final class LostCitiesProtectionTracker {
 
     private static final Map<Long, LongSet> PROTECTED = new Long2ObjectOpenHashMap<>();
+    public static final String CITY_FLOOR_KEY = "tfclc:city_floor";
+
 
     private LostCitiesProtectionTracker() {
     }

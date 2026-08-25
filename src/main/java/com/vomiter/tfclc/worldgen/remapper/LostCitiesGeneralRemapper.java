@@ -1,20 +1,25 @@
 package com.vomiter.tfclc.worldgen.remapper;
 
+import com.vomiter.tfclc.Helpers;
 import com.vomiter.tfclc.worldgen.remapper.wood.LostCitiesWoodRemapper;
 import com.vomiter.tfclc.worldgen.postprocess.LostCitiesPostProcessTracker;
 import com.vomiter.tfclc.worldgen.postprocess.PendingBlockEntityKind;
+import net.dries007.tfc.common.TFCTags;
 import net.dries007.tfc.common.blocks.TFCBlocks;
 import net.dries007.tfc.common.blocks.plant.Plant;
+import net.dries007.tfc.common.blocks.rock.Rock;
 import net.dries007.tfc.common.blocks.wood.Wood;
 import net.dries007.tfc.util.Metal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChainBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class LostCitiesGeneralRemapper {
     public static BlockState remap(BlockState state, BlockPos pos, LevelAccessor region) {
@@ -88,8 +93,24 @@ public class LostCitiesGeneralRemapper {
                     .setValue(ChainBlock.AXIS, state.getValue(ChainBlock.AXIS));
         }
 
+        if(state.is(Blocks.OAK_PLANKS)){
+            return TFCBlocks.WOODS.get(Wood.OAK).get(Wood.BlockType.PLANKS).get().defaultBlockState();
+        }
+
+        if(state.is(Blocks.DEEPSLATE_TILES)){
+            return TFCBlocks.ROCK_BLOCKS.get(Rock.SHALE).get(Rock.BlockType.CHISELED).get().defaultBlockState();
+        }
+
         var woodRemap = LostCitiesWoodRemapper.remapVanillaWood(state);
         if(woodRemap != null && woodRemap != state) return woodRemap;
+        var TFCIsOcean = TagKey.create(
+                ForgeRegistries.BIOMES.getRegistryKey(),
+                Helpers.id("tfc", "is_ocean")
+        );
+
+        if (region.getBiome(pos).is(TFCIsOcean) && state.is(Blocks.WATER)){
+            return TFCBlocks.SALT_WATER.get().defaultBlockState();
+        }
 
         return state;
     }

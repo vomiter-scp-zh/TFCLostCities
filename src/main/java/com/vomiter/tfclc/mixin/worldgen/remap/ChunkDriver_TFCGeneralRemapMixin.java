@@ -6,6 +6,7 @@ import mcjty.lostcities.worldgen.ChunkDriver;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,6 +21,9 @@ public abstract class ChunkDriver_TFCGeneralRemapMixin {
 
     @Shadow
     private LevelAccessor region;
+
+    @Shadow
+    private ChunkAccess primer;
 
     @ModifyVariable(
             method = "block(Lnet/minecraft/world/level/block/state/BlockState;)Lmcjty/lostcities/worldgen/ChunkDriver;",
@@ -54,8 +58,19 @@ public abstract class ChunkDriver_TFCGeneralRemapMixin {
             at = @At("HEAD"),
             argsOnly = true
     )
-    private BlockState tfclc$remapSetBlockRange(BlockState state) {
-        return LostCitiesGeneralRemapper.remap(state, null, region);
+    private BlockState tfclc$remapSetBlockRange(
+            BlockState state,
+            int x,
+            int y,
+            int z,
+            int y2
+    ) {
+        BlockPos pos = new BlockPos(
+                primer.getPos().getMinBlockX() + x,
+                y,
+                primer.getPos().getMinBlockZ() + z
+        );
+        return LostCitiesGeneralRemapper.remap(state, pos, region);
     }
 
     @ModifyVariable(

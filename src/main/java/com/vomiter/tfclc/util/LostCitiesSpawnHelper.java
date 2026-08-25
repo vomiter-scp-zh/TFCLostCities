@@ -9,9 +9,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public final class LostCitiesSpawnHelper {
 
-    private LostCitiesSpawnHelper() {
-    }
-
     public static boolean shouldDenyNaturalSpawn(ServerLevel level, BlockPos pos, EntityType<?> entityType) {
         if (!isLikelyLostCitiesRoof(level, pos)) {
             return false;
