@@ -1,5 +1,6 @@
 package com.vomiter.tfclc.mixin.worldgen.terrain;
 
+import com.vomiter.tfclc.Helpers;
 import com.vomiter.tfclc.worldgen.CityChunkData;
 import com.vomiter.tfclc.worldgen.CityTerrainSmoothingHelper;
 import mcjty.lostcities.setup.Registration;
@@ -7,10 +8,17 @@ import mcjty.lostcities.varia.ChunkCoord;
 import mcjty.lostcities.worldgen.IDimensionInfo;
 import mcjty.lostcities.worldgen.LostCityFeature;
 import mcjty.lostcities.worldgen.lost.BuildingInfo;
+import net.dries007.tfc.common.TFCTags;
 import net.dries007.tfc.world.TFCChunkGenerator;
+import net.minecraft.core.Holder;
+import net.minecraft.core.QuartPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -44,6 +52,7 @@ public abstract class TFCChunkGenerator_CitySmoothingMixin {
             return;
         }
 
+
         LostCityFeature feature = Registration.LOSTCITY_FEATURE.get();
         IDimensionInfo provider = feature.getDimensionInfo(level);
 
@@ -66,6 +75,18 @@ public abstract class TFCChunkGenerator_CitySmoothingMixin {
             chunkData.tfclc$setCityFloor(info.getCityGroundLevel());
             CityTerrainSmoothingHelper.lowerCurrentChunk(chunk, info.getCityGroundLevel());
         }
+
+        Holder<Biome> centerBiome = chunk.getNoiseBiome(
+                QuartPos.fromBlock(chunkPos.getMiddleBlockX()),
+                QuartPos.fromBlock(info.getCityGroundLevel()),
+                QuartPos.fromBlock(chunkPos.getMiddleBlockZ())
+        );
+
+        boolean biomeAllowed = centerBiome.is(TagKey.create(
+                Registries.BIOME,
+                Helpers.id("should_smooth")
+        ));
+        if (!biomeAllowed) return;
 
         OptionalInt targetHeight =
                 CityTerrainSmoothingHelper.findTargetHeight(

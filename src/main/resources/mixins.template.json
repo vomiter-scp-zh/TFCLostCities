@@ -33,6 +33,7 @@
     "worldgen.remap.LostCityTerrainFeature_TFCParkFoliageMixin",
     "worldgen.remap.LostCityTerrainFeature_TFCRandomVegetationMixin",
     "worldgen.terrain.TFCChunkGenerator_CitySmoothingMixin",
+    "worldgen.water.ChunkDriver_SaltWaterSupportMixin",
     "worldgen.water.LostCityTerrainFeature_NoFluidSmoothingMixin",
     "worldgen.water.LostCityTerrainFeature_SaltWaterSupportMixin",
     "worldgen.water.Railways_AdaptTFCWaterMixin",
