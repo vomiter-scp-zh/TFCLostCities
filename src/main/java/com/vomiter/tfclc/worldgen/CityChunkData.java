@@ -6,4 +6,6 @@ public interface CityChunkData {
     void tfclc$setTerrainSmoothed(boolean b);
     boolean tfclc$terrainSmoothed();
     int tfclc$getCityFloor();
+    int tfclc$getDistanceToNearestCities();
+    void tfclc$setDistanceToNearestCities(int i);
 }

@@ -16,6 +16,9 @@ public abstract class ChunkAccessMixin implements CityChunkData {
     @Unique
     private int tfclc$cityFloor;
 
+    @Unique
+    private volatile int tfclc$distanceToNearestCities = -1;
+
     @Override
     public void tfclc$setCityFloor(int height) {
         tfclc$isCity = true;
@@ -40,5 +43,13 @@ public abstract class ChunkAccessMixin implements CityChunkData {
     @Override
     public int tfclc$getCityFloor() {
         return tfclc$cityFloor;
+    }
+
+    public int tfclc$getDistanceToNearestCities() {
+        return tfclc$distanceToNearestCities;
+    }
+
+    public void tfclc$setDistanceToNearestCities(int tfclc$distanceToNearestCity) {
+        this.tfclc$distanceToNearestCities = tfclc$distanceToNearestCity;
     }
 }

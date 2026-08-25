@@ -8,6 +8,7 @@ import net.dries007.tfc.common.blocks.soil.SoilBlockType;
 import net.dries007.tfc.world.ChunkHeightFiller;
 import net.dries007.tfc.world.TFCChunkGenerator;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -42,25 +44,25 @@ public final class CityTerrainSmoothingHelper {
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES
             );
 
+
     /**
      * 計算目前 normal chunk 的地形高度上限。
      * 如果目前是城市、附近沒有城市、自然地形已經能正常銜接，
      * 或中途已經接回自然地形，便回傳 empty。
      */
+
     public static OptionalInt findTargetHeight(
-            IDimensionInfo provider,
+            WorldGenRegion level, IDimensionInfo provider,
             TFCChunkGenerator generator,
             ChunkPos currentPos
     ) {
-        BuildingInfo currentInfo =
-                getBuildingInfo(provider, currentPos);
+        BuildingInfo currentInfo = getBuildingInfo(provider, currentPos);
 
         if (isGeneratedAsCity(currentInfo)) {
             return OptionalInt.empty();
         }
 
-        Map<Long, Integer> naturalHeightCache =
-                new HashMap<>();
+        Map<Long, Integer> naturalHeightCache = new HashMap<>();
 
         int currentNaturalHeight = getNaturalHeight(
                 generator,
@@ -68,7 +70,7 @@ public final class CityTerrainSmoothingHelper {
                 naturalHeightCache
         );
 
-        List<CitySeed> nearestCities = findNearestCities(provider, currentPos, MAX_SEARCH_RADIUS);
+        List<CitySeed> nearestCities = findNearestCities(level, provider, currentPos, MAX_SEARCH_RADIUS);
 
         if (nearestCities.isEmpty()) { //無城市
             return OptionalInt.empty();
@@ -118,11 +120,23 @@ public final class CityTerrainSmoothingHelper {
      * 會把有相同距離的chunk都包在list內回傳
      */
     private static List<CitySeed> findNearestCities(
+            WorldGenRegion level,
             IDimensionInfo provider,
             ChunkPos origin,
             int maxRadius
     ) {
-        for (int radius = 1; radius <= maxRadius; radius++) {
+        CitySearchCache cache = getNearestCitySearchCache(level, origin, maxRadius);
+        int minSearchRadius;
+        int maxSearchRadius;
+        if (cache != null){
+            minSearchRadius = Math.max(1, cache.distanceToNearestCities - cache.distanceBetweenTwoChunks);
+            maxSearchRadius = Math.min(maxRadius, cache.distanceToNearestCities + cache.distanceBetweenTwoChunks);
+        } else {
+            minSearchRadius = 1;
+            maxSearchRadius = maxRadius;
+        }
+
+        for (int radius = minSearchRadius; radius <= maxSearchRadius; radius++) {
             List<CitySeed> found = new ArrayList<>();
             for (int dx = -radius; dx <= radius; dx++) {
                 for (int dz = -radius; dz <= radius; dz++) {
@@ -140,12 +154,60 @@ public final class CityTerrainSmoothingHelper {
             }
 
             if (!found.isEmpty()) {
+                ChunkAccess originChunk = level.getChunk(origin.x, origin.z);
+                if(originChunk instanceof CityChunkData chunkData){
+                    chunkData.tfclc$setDistanceToNearestCities(radius);
+                }
+
                 return found;
             }
         }
-
+        ChunkAccess originChunk = level.getChunk(origin.x, origin.z);
+        if(originChunk instanceof CityChunkData chunkData){
+            chunkData.tfclc$setDistanceToNearestCities(maxRadius + 1);
+        }
         return List.of();
     }
+
+
+    /**
+     * 根據附近能取得的 Chunk Access 決定之後搜尋的 radius 上下界
+     */
+    @Nullable
+    private static CitySearchCache getNearestCitySearchCache(WorldGenRegion level, ChunkPos origin, int maxRadius){
+        int minCacheDistance = Integer.MAX_VALUE;
+        boolean found = false;
+        for (int radius = 1; radius <= maxRadius / 2; radius++) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != radius) {
+                        continue;
+                    }
+
+                    ChunkPos candidatePos = new ChunkPos(origin.x + dx, origin.z + dz);
+                    if(level.hasChunk(candidatePos.x, candidatePos.z)){
+                        if (level.getChunk(candidatePos.x, candidatePos.z) instanceof CityChunkData chunkData){
+                            if (chunkData.tfclc$getDistanceToNearestCities() == -1){
+                                continue;
+                            }
+                            minCacheDistance = Math.min(minCacheDistance, chunkData.tfclc$getDistanceToNearestCities());
+                            found = true;
+                        }
+                    }
+                }
+            }
+
+            if (found) {
+                return new CitySearchCache(radius, minCacheDistance);
+            }
+        }
+        return null;
+    }
+
+
+
+    record CitySearchCache(int distanceBetweenTwoChunks, int distanceToNearestCities){}
 
     private static BuildingInfo getBuildingInfo(
             IDimensionInfo provider,
