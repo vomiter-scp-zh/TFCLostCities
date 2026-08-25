@@ -1,13 +1,14 @@
 package com.vomiter.tfclc.worldgen;
 
-import com.vomiter.tfclc.common.registry.TFCLCBlocks;
-import com.vomiter.tfclc.mixin.ChunkAccessAccessor;
 import mcjty.lostcities.varia.ChunkCoord;
 import mcjty.lostcities.worldgen.IDimensionInfo;
 import mcjty.lostcities.worldgen.lost.BuildingInfo;
+import net.dries007.tfc.common.blocks.TFCBlocks;
+import net.dries007.tfc.common.blocks.soil.SoilBlockType;
 import net.dries007.tfc.world.ChunkHeightFiller;
 import net.dries007.tfc.world.TFCChunkGenerator;
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,22 +23,14 @@ import java.util.Map;
 import java.util.OptionalInt;
 
 public final class CityTerrainSmoothingHelper {
-    /**
-     * Lost Cities 一層樓的高度。
-     * 每向外跨一個 chunk，地形高度最多增加六格。
-     */
+
     public static final int HEIGHT_PER_CHUNK = 3;
 
-    /**
-     * 最遠搜尋城市的距離。
-     * 12 個 chunk 對應最多 72 格高度差。
-     */
     public static final int MAX_SEARCH_RADIUS = 24;
 
-    /**
-     * 下移地表時保留的表層厚度。
-     */
     private static final int SURFACE_DEPTH = 6;
+
+    private static final BlockState GRASS = TFCBlocks.SOIL.get(SoilBlockType.GRASS).get(SoilBlockType.Variant.LOAM).get().defaultBlockState();
 
     private static final EnumSet<Heightmap.Types> ALL_HEIGHTMAPS =
             EnumSet.of(
@@ -48,20 +41,6 @@ public final class CityTerrainSmoothingHelper {
                     Heightmap.Types.MOTION_BLOCKING,
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES
             );
-
-    public static void rebuildAllHeightmaps(ChunkAccess chunk) {
-        Map<Heightmap.Types, Heightmap> heightmaps =
-                ((ChunkAccessAccessor) chunk).tfclc$getHeightmaps();
-
-        for (Heightmap.Types type : ALL_HEIGHTMAPS) {
-            heightmaps.remove(type);
-        }
-
-        Heightmap.primeHeightmaps(
-                chunk,
-                ALL_HEIGHTMAPS
-        );
-    }
 
     /**
      * 計算目前 normal chunk 的地形高度上限。
@@ -105,7 +84,6 @@ public final class CityTerrainSmoothingHelper {
             );
 
             int allowedHeight = city.cityGround() + HEIGHT_PER_CHUNK * (distance - 1);
-            //每隔距離允許增加 6 格高度
 
              //目前自然高度已經低於坡度上限 = 目前 chunk 本身就是自然銜接點。
             if (currentNaturalHeight <= allowedHeight) {
@@ -156,12 +134,7 @@ public final class CityTerrainSmoothingHelper {
                     ChunkPos candidatePos = new ChunkPos(origin.x + dx, origin.z + dz);
                     BuildingInfo info = getBuildingInfo(provider, candidatePos);
                     if (isGeneratedAsCity(info)) {
-                        found.add(
-                                new CitySeed(
-                                        candidatePos,
-                                        info.getCityGroundLevel()
-                                )
-                        );
+                        found.add(new CitySeed(candidatePos, info.getCityGroundLevel()));
                     }
                 }
             }
@@ -178,12 +151,7 @@ public final class CityTerrainSmoothingHelper {
             IDimensionInfo provider,
             ChunkPos pos
     ) {
-        ChunkCoord coord = new ChunkCoord(
-                provider.getType(),
-                pos.x,
-                pos.z
-        );
-
+        ChunkCoord coord = new ChunkCoord(provider.getType(), pos.x, pos.z);
         return BuildingInfo.getBuildingInfo(coord, provider);
     }
 
@@ -207,10 +175,9 @@ public final class CityTerrainSmoothingHelper {
             Map<Long, Integer> naturalHeightCache
     ) {
         int deltaX = destination.x - city.pos().x;
-
         int deltaZ = destination.z - city.pos().z;
-
         int steps = Math.max(Math.abs(deltaX), Math.abs(deltaZ));
+
         //相鄰不會有中間點
         if (steps <= 1) {
             return false;
@@ -228,7 +195,6 @@ public final class CityTerrainSmoothingHelper {
             * 例子    :
             * 城市 chunk = (10, 20)
             * 目標 chunk = (14, 22)
-            * cityGround = 71
             * 如果允許斜向移動，從 (10,20) 到 (14,22) 需要四步
             * => (10, 20), (11, 21), (12, 21), (13, 21), (14, 22)
             * https://en.wikipedia.org/wiki/Chebyshev_distance
@@ -256,8 +222,7 @@ public final class CityTerrainSmoothingHelper {
     }
 
     /**
-     * 取得 TFC 自然地形代表高度。
-     * 使用中心和四角共五個取樣點，取最大值
+     * 取得 TFC 自然地形代表高度。使用中心和四角共五個取樣點，取最大值
      */
     public static int getNaturalHeight(TFCChunkGenerator generator, ChunkPos chunkPos) {
         return getNaturalHeight(generator, chunkPos, new HashMap<>());
@@ -328,9 +293,7 @@ public final class CityTerrainSmoothingHelper {
                 int availableDepth = Math.min(SURFACE_DEPTH, surfaceY - minBuildHeight + 1);
 
                 BlockState[] surface = new BlockState[availableDepth];
-                /*
-                 * 保存原始地表，由最上層往下。
-                 */
+
                 for (int depth = 0; depth < availableDepth; depth++) {
                     cursor.set(x, surfaceY - depth, z);
                     surface[depth] = chunk.getBlockState(cursor);
@@ -349,7 +312,11 @@ public final class CityTerrainSmoothingHelper {
                     }
 
                     cursor.set(x, y, z);
-                    chunk.setBlockState(cursor, surface[depth], false);
+                    if (depth == 0 && !surface[depth].is(BlockTags.DIRT)){
+                        chunk.setBlockState(cursor, GRASS, false);
+                    } else {
+                        chunk.setBlockState(cursor, surface[depth], false);
+                    }
 
                 }
 
