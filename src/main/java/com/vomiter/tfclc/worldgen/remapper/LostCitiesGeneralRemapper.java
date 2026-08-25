@@ -97,9 +97,14 @@ public class LostCitiesGeneralRemapper {
             return TFCBlocks.WOODS.get(Wood.OAK).get(Wood.BlockType.PLANKS).get().defaultBlockState();
         }
 
-        if(state.is(Blocks.DEEPSLATE_TILES)){
+        if(state.is(Blocks.DEEPSLATE_TILES) || state.is(Blocks.CRACKED_DEEPSLATE_TILES)){
             return TFCBlocks.ROCK_BLOCKS.get(Rock.SHALE).get(Rock.BlockType.CHISELED).get().defaultBlockState();
         }
+
+        if(state.is(Blocks.IRON_BLOCK)){
+            return TFCBlocks.METALS.get(Metal.Default.WROUGHT_IRON).get(Metal.BlockType.BLOCK).get().defaultBlockState();
+        }
+
 
         var woodRemap = LostCitiesWoodRemapper.remapVanillaWood(state);
         if(woodRemap != null && woodRemap != state) return woodRemap;
