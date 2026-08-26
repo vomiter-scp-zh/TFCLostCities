@@ -44,6 +44,15 @@ public final class CityTerrainSmoothingHelper {
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES
             );
 
+    public record TargetHeightHolder(OptionalInt targetHeight, int xSign, int zSign){
+        public boolean isEmpty(){
+            return targetHeight().isEmpty();
+        }
+
+        public static TargetHeightHolder empty(){
+            return new TargetHeightHolder(OptionalInt.empty(), 0, 0);
+        }
+    }
 
     /**
      * 計算目前 normal chunk 的地形高度上限。
@@ -51,7 +60,7 @@ public final class CityTerrainSmoothingHelper {
      * 或中途已經接回自然地形，便回傳 empty。
      */
 
-    public static OptionalInt findTargetHeight(
+    public static TargetHeightHolder findTargetHeight(
             WorldGenRegion level, IDimensionInfo provider,
             TFCChunkGenerator generator,
             ChunkPos currentPos
@@ -59,7 +68,7 @@ public final class CityTerrainSmoothingHelper {
         BuildingInfo currentInfo = getBuildingInfo(provider, currentPos);
 
         if (isGeneratedAsCity(currentInfo)) {
-            return OptionalInt.empty();
+            return TargetHeightHolder.empty();
         }
 
         Map<Long, Integer> naturalHeightCache = new HashMap<>();
@@ -73,10 +82,13 @@ public final class CityTerrainSmoothingHelper {
         List<CitySeed> nearestCities = findNearestCities(level, provider, currentPos, MAX_SEARCH_RADIUS);
 
         if (nearestCities.isEmpty()) { //無城市
-            return OptionalInt.empty();
+            return TargetHeightHolder.empty();
         }
 
         int bestTarget = Integer.MAX_VALUE; //從最高往下追
+
+        int xSign = 0;
+        int zSign = 0;
 
         for (CitySeed city : nearestCities) {
             //每個city進行一次計算
@@ -105,14 +117,19 @@ public final class CityTerrainSmoothingHelper {
                 continue;
             }
 
-            bestTarget = Math.min(bestTarget, allowedHeight);
+            if(allowedHeight < bestTarget){
+                xSign = Integer.compare(city.pos().x - currentPos.x, 0);
+                zSign = Integer.compare(city.pos().z - currentPos.z, 0);
+                bestTarget = Math.min(bestTarget, allowedHeight);
+            }
         }
 
         if (bestTarget == Integer.MAX_VALUE) {
-            return OptionalInt.empty();
+            return TargetHeightHolder.empty();
         }
 
-        return OptionalInt.of(bestTarget);
+
+        return new TargetHeightHolder(OptionalInt.of(bestTarget), xSign, zSign);
     }
 
     /**
@@ -286,10 +303,6 @@ public final class CityTerrainSmoothingHelper {
     /**
      * 取得 TFC 自然地形代表高度。使用中心和四角共五個取樣點，取最大值
      */
-    public static int getNaturalHeight(TFCChunkGenerator generator, ChunkPos chunkPos) {
-        return getNaturalHeight(generator, chunkPos, new HashMap<>());
-    }
-
     private static int getNaturalHeight(TFCChunkGenerator generator, ChunkPos chunkPos, Map<Long, Integer> cache) {
         long key = chunkPos.toLong();
 
@@ -327,12 +340,14 @@ public final class CityTerrainSmoothingHelper {
      * 每欄保留最上方六層，搬到新的高度，避免把所有地表都直接
      * 變成裸岩。
      */
-    public static boolean lowerCurrentChunk(ChunkAccess chunk, int targetHeight) {
+    public static boolean lowerCurrentChunk(ChunkAccess chunk, TargetHeightHolder targetHeightHolder) {
         int minBuildHeight = chunk.getMinBuildHeight();
         int maxBuildHeight = chunk.getMaxBuildHeight();
-        targetHeight = Math.max(
+        if(targetHeightHolder.targetHeight.isEmpty()) return false;
+
+        int targetHeight = Math.max(
                 minBuildHeight + SURFACE_DEPTH,
-                Math.min(targetHeight, maxBuildHeight - 1)
+                Math.min(targetHeightHolder.targetHeight.getAsInt(), maxBuildHeight - 1)
         );
 
         int minX = chunk.getPos().getMinBlockX();
@@ -345,12 +360,15 @@ public final class CityTerrainSmoothingHelper {
 
                 int surfaceY = chunk.getHeight(Heightmap.Types.OCEAN_FLOOR_WG, localX, localZ);
 
-                if (surfaceY <= targetHeight) {
-                    continue;
-                }
-
                 int x = minX + localX;
                 int z = minZ + localZ;
+                int localXsign = Integer.compare(localX, 8);
+                int localZsign = Integer.compare(localZ, 8);
+                int localTargetHeight = targetHeight - (localXsign * targetHeightHolder.xSign * localX + localZsign * targetHeightHolder.zSign * localZsign) * HEIGHT_PER_CHUNK / 16;
+
+                if (surfaceY <= localTargetHeight) {
+                    continue;
+                }
 
                 int availableDepth = Math.min(SURFACE_DEPTH, surfaceY - minBuildHeight + 1);
 
@@ -361,14 +379,14 @@ public final class CityTerrainSmoothingHelper {
                     surface[depth] = chunk.getBlockState(cursor);
                 }
 
-                for (int y = targetHeight; y <= surfaceY; y++) {
+                for (int y = localTargetHeight; y <= surfaceY; y++) {
                     cursor.set(x, y, z);
                     chunk.setBlockState(cursor, Blocks.AIR.defaultBlockState(), false);
                 }
 
                 for (int depth = 0; depth < availableDepth; depth++) {
 
-                    int y = targetHeight - depth;
+                    int y = localTargetHeight - depth;
                     if (y < minBuildHeight) {
                         break;
                     }

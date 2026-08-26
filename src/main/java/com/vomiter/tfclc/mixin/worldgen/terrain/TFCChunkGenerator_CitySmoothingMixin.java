@@ -70,7 +70,7 @@ public abstract class TFCChunkGenerator_CitySmoothingMixin {
 
         if (generatesCityTerrain) {
             chunkData.tfclc$setCityFloor(info.getCityGroundLevel());
-            CityTerrainSmoothingHelper.lowerCurrentChunk(chunk, info.getCityGroundLevel());
+            CityTerrainSmoothingHelper.lowerCurrentChunk(chunk, new CityTerrainSmoothingHelper.TargetHeightHolder(OptionalInt.of(info.getCityGroundLevel()), 0, 0));
         }
 
         Holder<Biome> centerBiome = chunk.getNoiseBiome(
@@ -85,19 +85,19 @@ public abstract class TFCChunkGenerator_CitySmoothingMixin {
         ));
         if (!biomeAllowed) return;
 
-        OptionalInt targetHeight =
+        CityTerrainSmoothingHelper.TargetHeightHolder targetHeight =
                 CityTerrainSmoothingHelper.findTargetHeight(
-                        level,
-                        provider,
-                        (TFCChunkGenerator) (Object) this,
-                        chunkPos
-                );
+                            level,
+                            provider,
+                            (TFCChunkGenerator) (Object) this,
+                            chunkPos
+                        );
 
         if (targetHeight.isEmpty()) {
             return;
         }
 
-        if (CityTerrainSmoothingHelper.lowerCurrentChunk(chunk, targetHeight.getAsInt())) {
+        if (CityTerrainSmoothingHelper.lowerCurrentChunk(chunk, targetHeight)) {
             chunkData.tfclc$setTerrainSmoothed(true);
             CityTerrainSmoothingHelper.primeAllHeightmaps(chunk);
         }
