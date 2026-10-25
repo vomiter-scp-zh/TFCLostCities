@@ -4,6 +4,9 @@ import com.vomiter.tfclc.Helpers;
 import com.vomiter.tfclc.TFCLostCities;
 import net.dries007.tfc.common.blockentities.LargeVesselBlockEntity;
 import net.dries007.tfc.common.blockentities.BarrelBlockEntity;
+import net.dries007.tfc.common.blockentities.IngotPileBlockEntity;
+import net.dries007.tfc.common.blocks.devices.IngotPileBlock;
+import net.dries007.tfc.common.TFCTags;
 import net.dries007.tfc.common.blocks.devices.BarrelBlock;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.fluids.FluidStack;
@@ -29,6 +32,8 @@ import java.util.List;
 
 public final class LostCitiesLoot {
     public static final ResourceLocation TOOL_RACK = Helpers.id("tool_rack/default");
+    public static final ResourceLocation BASEMENT_INGOTS = Helpers.id("ingot_pile/basement");
+    public static final ResourceLocation RAIL_INGOTS = Helpers.id("ingot_pile/rail");
     public static final ResourceLocation BARREL = Helpers.id("barrel/default");
     public static final ResourceLocation CHEST = Helpers.id("chest/default");
     public static final ResourceLocation LARGE_VESSEL = Helpers.id("large_vessel/default");
@@ -77,6 +82,29 @@ public final class LostCitiesLoot {
     public static boolean initialize(ServerLevel level, TFCBlockEntity entity, ResourceLocation table, boolean seal) {
         if (entity instanceof LargeVesselBlockEntity vessel) {
             LostCitiesVesselLootHelper.initializePendingLoot(level, vessel, table, seal);
+            return true;
+        }
+        if (entity instanceof IngotPileBlockEntity pile) {
+            int count = 0;
+            for (ItemStack stack : roll(level, pile.getBlockPos(), table)) {
+                if (!stack.is(TFCTags.Items.PILEABLE_INGOTS)) {
+                    TFCLostCities.LOGGER.warn("Ingot pile loot {} rejected non-ingot {}", table, stack);
+                    continue;
+                }
+                if (stack.getCount() > 64 - count) {
+                    TFCLostCities.LOGGER.warn("Ingot pile loot {} exceeds 64 ingots at {}", table, pile.getBlockPos());
+                }
+                for (int i = 0; i < stack.getCount() && count < 64; i++) {
+                    pile.addIngot(stack.copyWithCount(1));
+                    count++;
+                }
+            }
+            if (count == 0) {
+                level.removeBlock(pile.getBlockPos(), false);
+            } else {
+                level.setBlock(pile.getBlockPos(), pile.getBlockState().setValue(IngotPileBlock.COUNT, count), 3);
+                pile.markForBlockUpdate();
+            }
             return true;
         }
         if (entity instanceof BarrelBlockEntity barrel) {

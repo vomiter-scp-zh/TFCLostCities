@@ -1,19 +1,18 @@
 package com.vomiter.tfclc.worldgen.postprocess.decorator;
 
 import com.vomiter.tfclc.TFCLostCities;
+import com.vomiter.tfclc.util.loot.LostCitiesLoot;
+import net.minecraft.resources.ResourceLocation;
 import mcjty.lostcities.varia.ChunkCoord;
 import mcjty.lostcities.worldgen.IDimensionInfo;
 import mcjty.lostcities.worldgen.lost.BuildingInfo;
 import net.dries007.tfc.common.blockentities.IngotPileBlockEntity;
 import net.dries007.tfc.common.blocks.TFCBlocks;
 import net.dries007.tfc.common.blocks.devices.IngotPileBlock;
-import net.dries007.tfc.common.items.TFCItems;
-import net.dries007.tfc.util.Metal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.Blocks;
@@ -21,28 +20,17 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public final class LostCitiesTFCIngotPileDecorator {
 
-    private static final Metal.Default[] BASEMENT_METALS = new Metal.Default[] {
-            Metal.Default.COPPER,
-            Metal.Default.TIN,
-            Metal.Default.ZINC,
-            Metal.Default.WROUGHT_IRON
-    };
-
-    private static final Metal.Default[] RAIL_METALS = new Metal.Default[] {
-            Metal.Default.NICKEL,
-            Metal.Default.BISMUTH,
-            Metal.Default.GOLD,
-            Metal.Default.SILVER
-    };
-
     private LostCitiesTFCIngotPileDecorator() {
     }
 
     public static void decorateChunk(IDimensionInfo provider, ChunkCoord coord) {
         final LevelAccessor level = provider.getWorld();
         final BuildingInfo info = BuildingInfo.getBuildingInfo(coord, provider);
+        if (!provider.getProfile().GENERATE_LOOT || info.noLoot) {
+            return;
+        }
 
-        final long seed = Mth.getSeed(coord.chunkX(), info.getCityGroundLevel(), coord.chunkZ()) ^ 0x31D8F4B2A4C91E77L;
+        final long seed = provider.getSeed() ^ Mth.getSeed(coord.chunkX(), info.getCityGroundLevel(), coord.chunkZ()) ^ 0x31D8F4B2A4C91E77L;
         final RandomSource random = RandomSource.create(seed);
 
         if (info.hasBuilding) {
@@ -86,11 +74,8 @@ public final class LostCitiesTFCIngotPileDecorator {
                 continue;
             }
 
-            final Metal.Default metal = randomElement(BASEMENT_METALS, random);
-            final int count = 5 + random.nextInt(20); // 5~24
-
-            if (tryPlaceIngotPile(level, pos, metal, count)) {
-                TFCLostCities.LOGGER.info("[TFCLC] BASEMENT INGOT PILE PLACED AT {} ({}, {} ingots)", pos, metal.name(), count);
+            if (tryPlaceIngotPile(level, pos, LostCitiesLoot.BASEMENT_INGOTS)) {
+                TFCLostCities.LOGGER.debug("[TFCLC] Basement ingot pile placed at {}", pos);
                 placed++;
             }
         }
@@ -127,44 +112,22 @@ public final class LostCitiesTFCIngotPileDecorator {
                 continue;
             }
 
-            final Metal.Default metal = randomElement(RAIL_METALS, random);
-            final int count = 6 + random.nextInt(19); // 6~24
-
-            if (tryPlaceIngotPile(level, pos, metal, count)) {
-                TFCLostCities.LOGGER.info("[TFCLC] RAIL INGOT PILE PLACED AT {} ({}, {} ingots)", pos, metal.name(), count);
+            if (tryPlaceIngotPile(level, pos, LostCitiesLoot.RAIL_INGOTS)) {
+                TFCLostCities.LOGGER.debug("[TFCLC] Rail ingot pile placed at {}", pos);
                 placed++;
             }
         }
     }
 
-    private static boolean tryPlaceIngotPile(LevelAccessor level, BlockPos pos, Metal.Default metal, int count) {
-        if (count < 1 || count > 64) {
+    private static boolean tryPlaceIngotPile(LevelAccessor level, BlockPos pos, ResourceLocation table) {
+        final BlockState pileState = TFCBlocks.INGOT_PILE.get().defaultBlockState();
+        if (!pileState.canSurvive(level, pos) || !level.setBlock(pos, pileState, 2)) {
             return false;
         }
-
-        final BlockState pileState = TFCBlocks.INGOT_PILE.get()
-                .defaultBlockState()
-                .setValue(IngotPileBlock.COUNT, count);
-
-        if (!pileState.canSurvive(level, pos)) {
+        if (!(level.getBlockEntity(pos) instanceof IngotPileBlockEntity)) {
             return false;
         }
-        if (!level.setBlock(pos, pileState, 2)) {
-            return false;
-        }
-        if (!(level.getBlockEntity(pos) instanceof IngotPileBlockEntity pile)) {
-            return false;
-        }
-
-        final ItemStack ingot = new ItemStack(
-                TFCItems.METAL_ITEMS.get(metal).get(Metal.ItemType.INGOT).get()
-        );
-
-        for (int i = 0; i < count; i++) {
-            pile.addIngot(ingot.copy());
-        }
-
-        pile.setChanged();
+        LostCitiesLoot.schedule(level, pos, table, false);
         return true;
     }
 
@@ -258,7 +221,4 @@ public final class LostCitiesTFCIngotPileDecorator {
         return false;
     }
 
-    private static <T> T randomElement(T[] array, RandomSource random) {
-        return array[random.nextInt(array.length)];
-    }
 }

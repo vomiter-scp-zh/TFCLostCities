@@ -64,6 +64,18 @@ public class SubLootTable implements LootTableSubProvider {
                 .add(counted(TFCItems.FOOD.get(Food.RICE_GRAIN).get(), 4, 12))
                 .add(counted(TFCItems.FOOD.get(Food.MAIZE_GRAIN).get(), 4, 12))
                 .add(counted(TFCItems.FOOD.get(Food.DRIED_KELP).get(), 2, 8))));
+        output.accept(LostCitiesLoot.BASEMENT_INGOTS, ingots(5, 24, Metal.Default.COPPER, Metal.Default.TIN, Metal.Default.ZINC, Metal.Default.WROUGHT_IRON));
+        output.accept(LostCitiesLoot.RAIL_INGOTS, ingots(6, 24, Metal.Default.NICKEL, Metal.Default.BISMUTH, Metal.Default.GOLD, Metal.Default.SILVER));
+
+    }
+
+    private static LootTable.Builder ingots(int min, int max, Metal.Default... metals) {
+        LootPool.Builder pool = LootPool.lootPool();
+        for (Metal.Default metal : metals) {
+            pool.add(counted(TFCItems.METAL_ITEMS.get(metal).get(Metal.ItemType.INGOT).get(), min, max).setWeight(4));
+        }
+        pool.add(counted(TFCItems.METAL_ITEMS.get(Metal.Default.UNKNOWN).get(Metal.ItemType.INGOT).get(), min, max).setWeight(3));
+        return LootTable.lootTable().withPool(pool);
     }
 
     private static LootPoolSingletonContainer.Builder<?> counted(Item item, int min, int max) {

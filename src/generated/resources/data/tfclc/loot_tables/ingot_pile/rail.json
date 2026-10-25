@@ -1,0 +1,92 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 24.0,
+                "min": 6.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:metal/ingot/nickel",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 24.0,
+                "min": 6.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:metal/ingot/bismuth",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 24.0,
+                "min": 6.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:metal/ingot/gold",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 24.0,
+                "min": 6.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:metal/ingot/silver",
+          "weight": 4
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 24.0,
+                "min": 6.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:metal/ingot/unknown",
+          "weight": 3
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "tfclc:ingot_pile/rail"
+}
