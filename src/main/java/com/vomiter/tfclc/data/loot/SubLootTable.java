@@ -56,6 +56,7 @@ public class SubLootTable implements LootTableSubProvider {
                         .setRolls(UniformGenerator.between(3, 6));
         TFCItems.CROP_SEEDS.values().forEach(seed -> chest.add(counted(seed.get(), 2, 16)));
         chest.add(counted(TFCItems.JUTE_FIBER.get(), 2, 8));
+        chest.add(counted(Items.CLAY_BALL, 4, 32));
         output.accept(LostCitiesLoot.CHEST, LootTable.lootTable().withPool(chest));
         output.accept(LostCitiesLoot.LARGE_VESSEL, LootTable.lootTable().withPool(LootPool.lootPool()
                 .setRolls(UniformGenerator.between(2, 5))
