@@ -14,6 +14,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChainBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
@@ -54,6 +57,12 @@ public class LostCitiesGeneralRemapper {
         }
 
         if(state.is(Blocks.CHEST) || state.is(Blocks.BARREL)){
+            LostCitiesPostProcessTracker.add(pos, PendingBlockEntityKind.LOOT_CONTAINER);
+            long seed = region instanceof WorldGenLevel world ? world.getSeed() : 0L;
+            if (pos != null && RandomSource.create(seed ^ pos.asLong() ^ 0x58F1D3A91CL).nextBoolean()) {
+                BlockState chest = TFCBlocks.WOODS.get(Wood.OAK).get(Wood.BlockType.CHEST).get().defaultBlockState();
+                return state.hasProperty(ChestBlock.FACING) ? chest.setValue(ChestBlock.FACING, state.getValue(ChestBlock.FACING)) : chest;
+            }
             return TFCBlocks.LARGE_VESSEL.get().defaultBlockState();
         }
 

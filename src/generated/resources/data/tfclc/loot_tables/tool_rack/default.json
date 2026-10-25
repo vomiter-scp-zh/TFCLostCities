@@ -1,0 +1,331 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/pickaxe/copper"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/axe/copper"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/shovel/copper"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/hoe/copper"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/knife/copper"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/hammer/copper"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/saw/copper"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/pickaxe/bronze"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/axe/bronze"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/shovel/bronze"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/hoe/bronze"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/knife/bronze"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/hammer/bronze"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/saw/bronze"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/pickaxe/wrought_iron"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/axe/wrought_iron"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/shovel/wrought_iron"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/hoe/wrought_iron"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/knife/wrought_iron"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/hammer/wrought_iron"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "damage": {
+                "type": "minecraft:uniform",
+                "max": 0.8,
+                "min": 0.05
+              },
+              "function": "minecraft:set_damage"
+            }
+          ],
+          "name": "tfc:metal/saw/wrought_iron"
+        }
+      ],
+      "rolls": {
+        "type": "minecraft:uniform",
+        "max": 3.0,
+        "min": 1.0
+      }
+    }
+  ],
+  "random_sequence": "tfclc:tool_rack/default"
+}

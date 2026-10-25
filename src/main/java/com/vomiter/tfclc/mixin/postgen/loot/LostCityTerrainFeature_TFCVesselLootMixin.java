@@ -1,13 +1,12 @@
 package com.vomiter.tfclc.mixin.postgen.loot;
 
-import com.vomiter.tfclc.Helpers;
-import com.vomiter.tfclc.util.loot.IPendingLootVessel;
+import com.vomiter.tfclc.util.loot.LostCitiesLoot;
+import net.dries007.tfc.common.blockentities.TFCChestBlockEntity;
 import mcjty.lostcities.worldgen.IDimensionInfo;
 import mcjty.lostcities.worldgen.LostCityTerrainFeature;
 import mcjty.lostcities.worldgen.lost.BuildingInfo;
 import net.dries007.tfc.common.blockentities.LargeVesselBlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Final;
@@ -35,11 +34,9 @@ public abstract class LostCityTerrainFeature_TFCVesselLootMixin {
             CallbackInfo ci
     ) {
         BlockEntity be = world.getBlockEntity(pos);
-
-        if (be instanceof LargeVesselBlockEntity vessel && be instanceof IPendingLootVessel pending) {
-            if (provider.getProfile().GENERATE_LOOT) {
-                pending.tfclc$setPendingLoot(Helpers.id("large_vessel/default"), true);
-                vessel.setChanged();
+        if (be instanceof LargeVesselBlockEntity || be instanceof TFCChestBlockEntity) {
+            if (provider.getProfile().GENERATE_LOOT && !info.noLoot) {
+                LostCitiesLoot.scheduleContainer(world, pos);
             }
             ci.cancel();
         }

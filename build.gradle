@@ -23,6 +23,8 @@ base { archivesName = mod_id }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
+sourceSets.main.resources.srcDir('src/generated/resources')
+
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
     copyIdeResources = true

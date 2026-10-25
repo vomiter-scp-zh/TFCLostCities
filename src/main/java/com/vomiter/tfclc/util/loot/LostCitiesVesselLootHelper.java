@@ -1,5 +1,6 @@
 package com.vomiter.tfclc.util.loot;
 
+import com.vomiter.tfclc.TFCLostCities;
 import net.dries007.tfc.common.blockentities.LargeVesselBlockEntity;
 import net.dries007.tfc.common.blocks.LargeVesselBlock;
 import net.minecraft.core.BlockPos;
@@ -7,11 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -32,13 +28,7 @@ public final class LostCitiesVesselLootHelper {
     ) {
         BlockPos pos = vessel.getBlockPos();
 
-        LootTable table = level.getServer().getLootData().getLootTable(lootId);
-
-        LootParams params = new LootParams.Builder(level)
-                .withOptionalParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
-                .create(LootContextParamSets.EMPTY);
-
-        List<ItemStack> items = table.getRandomItems(params);
+        List<ItemStack> items = LostCitiesLoot.roll(level, pos, lootId);
 
         vessel.getCapability(ForgeCapabilities.ITEM_HANDLER, null).ifPresent(handler -> {
             clear(handler);
@@ -50,7 +40,7 @@ public final class LostCitiesVesselLootHelper {
                 ItemStack remain = ItemHandlerHelper.insertItemStacked(handler, stack.copy(), false);
 
                 if (!remain.isEmpty()) {
-                    // no-op
+                    TFCLostCities.LOGGER.warn("Vessel loot {} could not fit {} at {}", lootId, remain, pos);
                 }
             }
         });

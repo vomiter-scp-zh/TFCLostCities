@@ -1,6 +1,8 @@
 package com.vomiter.tfclc.mixin.postgen;
 
 import com.vomiter.tfclc.TFCLostCities;
+import com.vomiter.tfclc.util.loot.LostCitiesLoot;
+import mcjty.lostcities.worldgen.lost.BuildingInfo;
 import com.vomiter.tfclc.util.bookshelf.LostCitiesBookshelfFacingHelper;
 import com.vomiter.tfclc.util.bookshelf.LostCitiesBookshelfFiller;
 import com.vomiter.tfclc.worldgen.postprocess.LostCitiesPostProcessTracker;
@@ -56,6 +58,11 @@ public abstract class ChunkFixer_PostProcessSpecialBEMixin {
 
 
             switch (kind) {
+                case LOOT_CONTAINER -> {
+                    if (info.getProfile().GENERATE_LOOT && !BuildingInfo.getBuildingInfo(coord, info).noLoot) {
+                        LostCitiesLoot.scheduleContainer(level, pos);
+                    }
+                }
                 case FILLED_BOOKSHELF -> tfclc$processBookshelf(level, pos, random);
                 case LAVA_LAMP -> tfclc$processLamp(level, pos);
             }

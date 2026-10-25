@@ -1,6 +1,6 @@
 package com.vomiter.tfclc.worldgen.postprocess.decorator;
 
-import com.vomiter.tfclc.Helpers;
+import com.vomiter.tfclc.util.loot.LostCitiesLoot;
 import com.vomiter.tfclc.TFCLostCities;
 import mcjty.lostcities.varia.ChunkCoord;
 import mcjty.lostcities.worldgen.IDimensionInfo;
@@ -9,42 +9,23 @@ import net.dries007.tfc.common.blockentities.ToolRackBlockEntity;
 import net.dries007.tfc.common.blocks.TFCBlocks;
 import net.dries007.tfc.common.blocks.wood.ToolRackBlock;
 import net.dries007.tfc.common.blocks.wood.Wood;
-import net.dries007.tfc.common.recipes.ingredients.BlockIngredient;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public final class LostCitiesTFCToolRackDecorator {
-
-    private static final TagKey<Item> TOOL_RACK_ITEMS = TagKey.create(
-        Registries.ITEM,
-            Helpers.id("tfc", "usable_on_tool_rack")
-    );
-
-    private static final TagKey<Item> NOT_TOOL_RACK_ITEMS = TagKey.create(
-            Registries.ITEM,
-            Helpers.id("tfclc", "old_tool_rack_items_blacklist")
-    );
-
 
     private static final Wood[] RACK_WOODS = new Wood[] {
         Wood.OAK,
@@ -62,18 +43,13 @@ public final class LostCitiesTFCToolRackDecorator {
         final LevelAccessor level = provider.getWorld();
         final BuildingInfo info = BuildingInfo.getBuildingInfo(coord, provider);
 
-        if (!info.hasBuilding) {
+        if (!info.hasBuilding || info.noLoot || !provider.getProfile().GENERATE_LOOT) {
             return;
         }
 
         // 讓同一 chunk 結果穩定，不吃 runtime 隨機波動
-        final long seed = Mth.getSeed(coord.chunkX(), info.getCityGroundLevel(), coord.chunkZ()) ^ 0x54CFC7A1D93E4B17L;
+        final long seed = provider.getSeed() ^ Mth.getSeed(coord.chunkX(), info.getCityGroundLevel(), coord.chunkZ()) ^ 0x54CFC7A1D93E4B17L;
         final RandomSource random = RandomSource.create(seed);
-
-        final List<ItemStack> itemPool = getRackableItemPool(level);
-        if (itemPool.isEmpty()) {
-            return;
-        }
 
         final int minY = info.getCityGroundLevel() + 1;
         final int maxY = Math.max(minY, info.getMaxHeight() - 2);
@@ -101,14 +77,14 @@ public final class LostCitiesTFCToolRackDecorator {
                 continue;
             }
 
-            if (tryPlaceToolRack(level, pos, facing, random, itemPool)) {
+            if (tryPlaceToolRack(level, pos, facing, random)) {
                 TFCLostCities.LOGGER.debug("[TFCLC] RACK PLACED AT　{}", pos);
                 placed++;
             }
         }
     }
 
-    private static boolean tryPlaceToolRack(LevelAccessor level, BlockPos pos, Direction facing, RandomSource random, List<ItemStack> pool) {
+    private static boolean tryPlaceToolRack(LevelAccessor level, BlockPos pos, Direction facing, RandomSource random) {
         final BlockState rackState = TFCBlocks.WOODS.get(randomWood(random))
             .get(Wood.BlockType.TOOL_RACK)
             .get()
@@ -126,38 +102,7 @@ public final class LostCitiesTFCToolRackDecorator {
             return false;
         }
 
-        rack.getCapability(ForgeCapabilities.ITEM_HANDLER, null).ifPresent(handler -> {
-            final List<ItemStack> shuffled = new ArrayList<>(pool);
-            Collections.shuffle(shuffled, new java.util.Random(random.nextLong()));
-
-            final int count = 1 + random.nextInt(3); // 1~3 件，比滿架自然
-            int inserted = 0;
-            int slot = 0;
-
-            for (ItemStack original : shuffled) {
-                if (slot >= handler.getSlots() || inserted >= count) {
-                    break;
-                }
-
-                ItemStack stack = original.copy();
-                stack.setCount(1);
-
-                // 舊工具
-                if (stack.isDamageableItem()) {
-                    int maxDamage = stack.getMaxDamage();
-                    if (maxDamage > 8) {
-                        int damage = random.nextInt(Math.min(Math.max(1, (int) (maxDamage * 0.95f)), maxDamage - 1));
-                        stack.setDamageValue(damage);
-                    }
-                }
-
-                ItemStack remainder = handler.insertItem(slot, stack, false);
-                if (remainder.isEmpty()) {
-                    inserted++;
-                    slot++;
-                }
-            }
-        });
+        LostCitiesLoot.schedule(level, pos, LostCitiesLoot.TOOL_RACK, false);
 
         rack.setChanged();
         return true;
@@ -170,7 +115,7 @@ public final class LostCitiesTFCToolRackDecorator {
         dirs.add(Direction.SOUTH);
         dirs.add(Direction.WEST);
         dirs.add(Direction.EAST);
-        Collections.shuffle(dirs, new java.util.Random(random.nextLong()));
+        Collections.shuffle(dirs, new Random(random.nextLong()));
 
         for (Direction facing : dirs) {
             final BlockPos supportPos = pos.relative(facing.getOpposite());
@@ -230,22 +175,4 @@ public final class LostCitiesTFCToolRackDecorator {
         return RACK_WOODS[random.nextInt(RACK_WOODS.length)];
     }
 
-    private static List<ItemStack> getRackableItemPool(LevelAccessor level) {
-        final Registry<Item> registry = level.registryAccess().registryOrThrow(Registries.ITEM);
-        final List<ItemStack> result = new ArrayList<>();
-
-        registry.getTag(TOOL_RACK_ITEMS).ifPresent(named -> {
-            for (Holder<Item> holder : named) {
-                final Item item = holder.value();
-                if (item == null || item == Items.AIR) {
-                    continue;
-                }
-                var stack = new ItemStack(item);
-                if(stack.is(NOT_TOOL_RACK_ITEMS)) continue;
-                result.add(stack);
-            }
-        });
-
-        return result;
-    }
 }
