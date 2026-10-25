@@ -1,6 +1,11 @@
 package com.vomiter.tfclc.data.loot;
 
 import com.vomiter.tfclc.util.loot.LostCitiesLoot;
+import com.vomiter.tfclc.util.loot.BarrelContentFunction;
+import net.dries007.tfc.common.fluids.TFCFluids;
+import net.dries007.tfc.common.fluids.SimpleFluid;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.material.Fluids;
 import net.dries007.tfc.common.items.TFCItems;
 import net.dries007.tfc.common.items.Food;
 import net.dries007.tfc.util.Metal;
@@ -14,6 +19,8 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemDamageFunction;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.fluids.ForgeFlowingFluid;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiConsumer;
@@ -29,6 +36,22 @@ public class SubLootTable implements LootTableSubProvider {
             }
         }
         output.accept(LostCitiesLoot.TOOL_RACK, LootTable.lootTable().withPool(tools));
+        output.accept(LostCitiesLoot.BARREL, LootTable.lootTable().withPool(LootPool.lootPool()
+                .add(LootItem.lootTableItem(TFCItems.VESSEL.get()).setWeight(2))
+                        .apply(BarrelContentFunction.content(ForgeMod.MILK.get(), 4000, false, true))
+                .add(LootItem.lootTableItem(TFCItems.VESSEL.get()).setWeight(3)
+                        .apply(BarrelContentFunction.content(Fluids.WATER, 4000, false, true)))
+                .add(LootItem.lootTableItem(TFCItems.VESSEL.get()).setWeight(2)
+                        .apply(BarrelContentFunction.content(TFCFluids.SIMPLE_FLUIDS.get(SimpleFluid.VINEGAR).getSource(), 4000, false, true)))
+                .add(LootItem.lootTableItem(TFCItems.VESSEL.get())
+                        .apply(BarrelContentFunction.content(TFCFluids.SIMPLE_FLUIDS.get(SimpleFluid.BRINE).getSource(), 2000, false, true)))
+                .add(counted(TFCItems.FOOD.get(Food.CARROT).get(), 4, 12).setWeight(2)
+                        .apply(BarrelContentFunction.content(null, 0, true, false)))
+                .add(counted(TFCItems.FOOD.get(Food.CABBAGE).get(), 4, 12).setWeight(2)
+                        .apply(BarrelContentFunction.content(TFCFluids.SIMPLE_FLUIDS.get(SimpleFluid.BRINE).getSource(), 3000, true, false)))
+                .add(counted(TFCItems.FOOD.get(Food.COOKED_PORK).get(), 4, 12).setWeight(2)
+                        .apply(BarrelContentFunction.content(TFCFluids.SIMPLE_FLUIDS.get(SimpleFluid.BRINE).getSource(), 3000, true, false)))
+        ));
         output.accept(LostCitiesLoot.CHEST, LootTable.lootTable().withPool(LootPool.lootPool()
                 .setRolls(UniformGenerator.between(3, 6))
                 .add(counted(TFCItems.JUTE_FIBER.get(), 2, 8))

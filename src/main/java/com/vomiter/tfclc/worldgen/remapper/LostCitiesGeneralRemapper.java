@@ -11,11 +11,13 @@ import net.dries007.tfc.common.blocks.rock.Rock;
 import net.dries007.tfc.common.blocks.wood.Wood;
 import net.dries007.tfc.util.Metal;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.ChestBlock;
+import net.dries007.tfc.common.blocks.devices.BarrelBlock;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChainBlock;
@@ -72,6 +74,12 @@ public class LostCitiesGeneralRemapper {
         }
 
         if(state.is(Blocks.FURNACE)){
+            long seed = region instanceof WorldGenLevel world ? world.getSeed() : 0L;
+            if (pos != null && RandomSource.create(seed ^ pos.asLong() ^ 0x61C24A9BL).nextInt(3) == 0) {
+                LostCitiesPostProcessTracker.add(pos, PendingBlockEntityKind.LOOT_CONTAINER);
+                return TFCBlocks.WOODS.get(Wood.OAK).get(Wood.BlockType.BARREL).get().defaultBlockState()
+                        .setValue(BarrelBlock.FACING, Direction.UP);
+            }
             return TFCBlocks.CRUCIBLE.get().defaultBlockState();
         }
 

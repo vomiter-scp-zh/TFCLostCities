@@ -3,6 +3,12 @@ package com.vomiter.tfclc.util.loot;
 import com.vomiter.tfclc.Helpers;
 import com.vomiter.tfclc.TFCLostCities;
 import net.dries007.tfc.common.blockentities.LargeVesselBlockEntity;
+import net.dries007.tfc.common.blockentities.BarrelBlockEntity;
+import net.dries007.tfc.common.blocks.devices.BarrelBlock;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.dries007.tfc.common.blockentities.TFCBlockEntity;
 import net.dries007.tfc.common.blockentities.ToolRackBlockEntity;
 import net.dries007.tfc.common.blockentities.TFCChestBlockEntity;
@@ -23,6 +29,7 @@ import java.util.List;
 
 public final class LostCitiesLoot {
     public static final ResourceLocation TOOL_RACK = Helpers.id("tool_rack/default");
+    public static final ResourceLocation BARREL = Helpers.id("barrel/default");
     public static final ResourceLocation CHEST = Helpers.id("chest/default");
     public static final ResourceLocation LARGE_VESSEL = Helpers.id("large_vessel/default");
 
@@ -49,6 +56,10 @@ public final class LostCitiesLoot {
             schedule(level, pos, LARGE_VESSEL, true);
             return true;
         }
+        if (level.getBlockEntity(pos) instanceof BarrelBlockEntity) {
+            schedule(level, pos, BARREL, true);
+            return true;
+        }
         return false;
     }
 
@@ -68,6 +79,10 @@ public final class LostCitiesLoot {
             LostCitiesVesselLootHelper.initializePendingLoot(level, vessel, table, seal);
             return true;
         }
+        if (entity instanceof BarrelBlockEntity barrel) {
+            fillBarrel(level, barrel, table, seal);
+            return true;
+        }
         if (entity instanceof ToolRackBlockEntity rack) {
             rack.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
                 for (ItemStack stack : roll(level, rack.getBlockPos(), table)) {
@@ -82,4 +97,39 @@ public final class LostCitiesLoot {
         }
         return false;
     }
+    private static void fillBarrel(ServerLevel level, BarrelBlockEntity barrel, ResourceLocation table, boolean seal) {
+        // Only the main item slot is storage. Slots 0/1 are fluid-container IO.
+        for (ItemStack generated : roll(level, barrel.getBlockPos(), table)) {
+            ItemStack stack = generated.copy();
+            CompoundTag payload = stack.getTag() == null ? new CompoundTag() : stack.getTag().getCompound(BarrelContentFunction.PAYLOAD);
+            boolean fluidOnly = payload.getBoolean("fluid_only");
+            stack.removeTagKey(BarrelContentFunction.PAYLOAD);
+            if (payload.contains("fluid")) {
+                ResourceLocation fluidId = ResourceLocation.tryParse(payload.getString("fluid"));
+                if (fluidId != null && ForgeRegistries.FLUIDS.containsKey(fluidId)) {
+                    FluidStack fluid = new FluidStack(ForgeRegistries.FLUIDS.getValue(fluidId), payload.getInt("amount"));
+                    barrel.getCapability(ForgeCapabilities.FLUID_HANDLER).ifPresent(handler -> {
+                        int filled = handler.fill(fluid, IFluidHandler.FluidAction.EXECUTE);
+                        if (filled != fluid.getAmount()) {
+                            TFCLostCities.LOGGER.warn("Barrel loot {} accepted only {}/{} mB at {}", table, filled, fluid.getAmount(), barrel.getBlockPos());
+                        }
+                    });
+                }
+            }
+            if (!fluidOnly && !stack.isEmpty()) {
+                barrel.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
+                    ItemStack remainder = handler.insertItem(BarrelBlockEntity.SLOT_ITEM, stack, false);
+                    if (!remainder.isEmpty()) {
+                        TFCLostCities.LOGGER.warn("Barrel loot {} could not fit {} at {}", table, remainder, barrel.getBlockPos());
+                    }
+                });
+            }
+        }
+        if (seal && !barrel.getBlockState().getValue(BarrelBlock.SEALED)) {
+            level.setBlock(barrel.getBlockPos(), barrel.getBlockState().setValue(BarrelBlock.SEALED, true), 3);
+            barrel.onSeal();
+        }
+        barrel.markForBlockUpdate();
+    }
+
 }

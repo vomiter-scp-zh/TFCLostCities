@@ -2,6 +2,7 @@ package com.vomiter.tfclc.mixin.postgen.loot;
 
 import com.vomiter.tfclc.util.loot.LostCitiesLoot;
 import net.dries007.tfc.common.blockentities.TFCChestBlockEntity;
+import net.dries007.tfc.common.blockentities.BarrelBlockEntity;
 import mcjty.lostcities.worldgen.IDimensionInfo;
 import mcjty.lostcities.worldgen.LostCityTerrainFeature;
 import mcjty.lostcities.worldgen.lost.BuildingInfo;
@@ -34,7 +35,7 @@ public abstract class LostCityTerrainFeature_TFCVesselLootMixin {
             CallbackInfo ci
     ) {
         BlockEntity be = world.getBlockEntity(pos);
-        if (be instanceof LargeVesselBlockEntity || be instanceof TFCChestBlockEntity) {
+        if (be instanceof LargeVesselBlockEntity || be instanceof TFCChestBlockEntity || be instanceof BarrelBlockEntity) {
             if (provider.getProfile().GENERATE_LOOT && !info.noLoot) {
                 LostCitiesLoot.scheduleContainer(world, pos);
             }
