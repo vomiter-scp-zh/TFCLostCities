@@ -46,7 +46,7 @@ public final class LostCitiesTFCSmallVesselDecorator {
                 continue;
             }
             BlockState state = PlacedItemBlock.updateStateValues(level, selected.below(), TFCBlocks.PLACED_ITEM.get().defaultBlockState());
-            if (level.setBlock(selected, state, 2) && level.getBlockEntity(selected) instanceof PlacedItemBlockEntity) {
+            if (level.setBlock(selected, state, 2) && LostCitiesLoot.getOrCreateBlockEntity(level, selected) instanceof PlacedItemBlockEntity) {
                 LostCitiesLoot.schedule(level, selected, LostCitiesLoot.SMALL_VESSEL, false);
                 placed++;
             }

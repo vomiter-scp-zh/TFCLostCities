@@ -34,7 +34,7 @@ public abstract class LostCityTerrainFeature_TFCVesselLootMixin {
             BuildingInfo.ConditionTodo condition,
             CallbackInfo ci
     ) {
-        BlockEntity be = world.getBlockEntity(pos);
+        BlockEntity be = LostCitiesLoot.getOrCreateBlockEntity(world, pos);
         if (be instanceof LargeVesselBlockEntity || be instanceof TFCChestBlockEntity || be instanceof BarrelBlockEntity) {
             if (provider.getProfile().GENERATE_LOOT && !info.noLoot) {
                 LostCitiesLoot.scheduleContainer(world, pos);

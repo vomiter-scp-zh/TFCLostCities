@@ -22,6 +22,12 @@ import net.dries007.tfc.common.blockentities.TFCChestBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.WorldGenRegion;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.WorldGenLevel;
@@ -45,8 +51,58 @@ public final class LostCitiesLoot {
 
     private LostCitiesLoot() {}
 
+    /**
+     * Lost Cities writes section states directly, bypassing vanilla's block entity creation.
+     * Register the entity in the generation chunk before asking WorldGenRegion for it.
+     */
+    @Nullable
+    public static BlockEntity getOrCreateBlockEntity(LevelAccessor level, BlockPos pos) {
+        if (!(level instanceof WorldGenRegion)) {
+            return level.getBlockEntity(pos);
+        }
+
+        ChunkAccess chunk = level.getChunk(pos);
+        BlockState state = chunk.getBlockState(pos);
+        if (!state.hasBlockEntity() || !(state.getBlock() instanceof EntityBlock block)) {
+            return null;
+        }
+
+        BlockEntity entity = chunk.getBlockEntity(pos);
+        if (entity != null && entity.getType().isValid(state)) {
+            return entity;
+        }
+        if (entity != null) {
+            chunk.removeBlockEntity(pos);
+        }
+
+        CompoundTag saved = chunk.getBlockEntityNbt(pos);
+        if (saved != null && !"DUMMY".equals(saved.getString("id"))) {
+            entity = BlockEntity.loadStatic(pos, state, saved);
+        }
+        if (entity == null || !entity.getType().isValid(state)) {
+            entity = block.newBlockEntity(pos, state);
+        }
+        if (entity != null) {
+            // Leave ProtoChunk entities without a level. Normal chunk loading assigns the
+            // ServerLevel and invokes onLoad, which then initializes the saved pending loot.
+            chunk.setBlockEntity(entity);
+            chunk.setUnsaved(true);
+        }
+        return entity;
+    }
+
     public static void schedule(LevelAccessor level, BlockPos pos, ResourceLocation table, boolean seal) {
-        if (level.getBlockEntity(pos) instanceof IPendingLootVessel pending) {
+        BlockEntity entity = getOrCreateBlockEntity(level, pos);
+        if (entity instanceof IPendingLootVessel pending) {
+            if (level instanceof WorldGenRegion && entity.getLevel() instanceof ServerLevel loadedLevel) {
+                BlockPos queuedPos = pos.immutable();
+                loadedLevel.getServer().execute(() -> {
+                    if (!entity.isRemoved() && loadedLevel.getBlockEntity(queuedPos) == entity) {
+                        schedule(loadedLevel, queuedPos, table, seal);
+                    }
+                });
+                return;
+            }
             pending.tfclc$setPendingLoot(table, seal);
             // Proto-chunk entities initialize onLoad; already loaded entities initialize now.
             if (level instanceof ServerLevel) {
@@ -56,17 +112,30 @@ public final class LostCitiesLoot {
     }
 
     public static boolean scheduleContainer(LevelAccessor level, BlockPos pos) {
-        if (level.getBlockEntity(pos) instanceof TFCChestBlockEntity chest) {
+        BlockEntity entity = getOrCreateBlockEntity(level, pos);
+        if (!(entity instanceof TFCChestBlockEntity || entity instanceof LargeVesselBlockEntity || entity instanceof BarrelBlockEntity)) {
+            return false;
+        }
+        if (level instanceof WorldGenRegion && entity.getLevel() instanceof ServerLevel loadedLevel) {
+            BlockPos queuedPos = pos.immutable();
+            loadedLevel.getServer().execute(() -> {
+                if (!entity.isRemoved() && loadedLevel.getBlockEntity(queuedPos) == entity) {
+                    scheduleContainer(loadedLevel, queuedPos);
+                }
+            });
+            return true;
+        }
+        if (entity instanceof TFCChestBlockEntity chest) {
             long seed = level instanceof WorldGenLevel world ? world.getSeed() : 0L;
             chest.setLootTable(CHEST, seed ^ pos.asLong() ^ ((long) CHEST.hashCode() << 32));
             chest.setChanged();
             return true;
         }
-        if (level.getBlockEntity(pos) instanceof LargeVesselBlockEntity) {
+        if (entity instanceof LargeVesselBlockEntity) {
             schedule(level, pos, LARGE_VESSEL, true);
             return true;
         }
-        if (level.getBlockEntity(pos) instanceof BarrelBlockEntity) {
+        if (entity instanceof BarrelBlockEntity) {
             schedule(level, pos, BARREL, true);
             return true;
         }

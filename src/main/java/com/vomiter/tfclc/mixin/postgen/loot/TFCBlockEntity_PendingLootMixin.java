@@ -94,6 +94,15 @@ public abstract class TFCBlockEntity_PendingLootMixin implements IPendingLootVes
             return;
         }
 
+        if (!serverLevel.getServer().isSameThread()) {
+            serverLevel.getServer().execute(() -> {
+                if (!self.isRemoved() && serverLevel.getBlockEntity(self.getBlockPos()) == self) {
+                    tfclc$tryInitializePendingLoot();
+                }
+            });
+            return;
+        }
+
         if (!LostCitiesLoot.initialize(serverLevel, self, tfclc$pendingLootId, tfclc$pendingSeal)) {
             return;
         }

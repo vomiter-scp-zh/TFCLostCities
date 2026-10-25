@@ -124,7 +124,7 @@ public final class LostCitiesTFCIngotPileDecorator {
         if (!pileState.canSurvive(level, pos) || !level.setBlock(pos, pileState, 2)) {
             return false;
         }
-        if (!(level.getBlockEntity(pos) instanceof IngotPileBlockEntity)) {
+        if (!(LostCitiesLoot.getOrCreateBlockEntity(level, pos) instanceof IngotPileBlockEntity)) {
             return false;
         }
         LostCitiesLoot.schedule(level, pos, table, false);

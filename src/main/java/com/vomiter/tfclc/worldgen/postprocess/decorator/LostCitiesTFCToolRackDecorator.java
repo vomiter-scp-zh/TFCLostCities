@@ -98,7 +98,7 @@ public final class LostCitiesTFCToolRackDecorator {
         if (!level.setBlock(pos, rackState, 2)) {
             return false;
         }
-        if (!(level.getBlockEntity(pos) instanceof ToolRackBlockEntity rack)) {
+        if (!(LostCitiesLoot.getOrCreateBlockEntity(level, pos) instanceof ToolRackBlockEntity rack)) {
             return false;
         }
 
