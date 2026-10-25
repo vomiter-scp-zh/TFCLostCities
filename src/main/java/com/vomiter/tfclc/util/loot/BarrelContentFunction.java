@@ -52,6 +52,7 @@ public class BarrelContentFunction extends LootItemConditionalFunction {
             FoodCapability.updateFoodDecayOnCreate(stack);
             FoodCapability.applyTrait(stack, FoodTraits.SALTED);
             FoodCapability.applyTrait(stack, FoodTraits.BRINED);
+            FoodCapability.applyTrait(stack, FoodTraits.PICKLED);
         }
         if (fluid != null || fluidOnly) {
             CompoundTag payload = new CompoundTag();

@@ -32,6 +32,7 @@ public final class LostCitiesTFCSmallVesselDecorator {
         int minY = Math.max(level.getMinBuildHeight() + 1, info.getCityGroundLevel() - 12);
         int maxY = Math.min(level.getMaxBuildHeight() - 2, Math.max(info.getCityGroundLevel() + 2, info.getMaxHeight()));
         for (int attempt = 0; attempt < 24 && placed < target; attempt++) {
+            if (random.nextFloat() > 0.3f) continue;
             int x = 1 + random.nextInt(14);
             int z = 1 + random.nextInt(14);
             BlockPos selected = null;

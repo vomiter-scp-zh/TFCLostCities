@@ -48,9 +48,9 @@ public class SubLootTable implements LootTableSubProvider {
                 .add(counted(TFCItems.FOOD.get(Food.CARROT).get(), 4, 12).setWeight(2)
                         .apply(BarrelContentFunction.content(null, 0, true, false)))
                 .add(counted(TFCItems.FOOD.get(Food.CABBAGE).get(), 4, 12).setWeight(2)
-                        .apply(BarrelContentFunction.content(TFCFluids.SIMPLE_FLUIDS.get(SimpleFluid.BRINE).getSource(), 3000, true, false)))
+                        .apply(BarrelContentFunction.content(TFCFluids.SIMPLE_FLUIDS.get(SimpleFluid.VINEGAR).getSource(), 3000, true, false)))
                 .add(counted(TFCItems.FOOD.get(Food.COOKED_PORK).get(), 4, 12).setWeight(2)
-                        .apply(BarrelContentFunction.content(TFCFluids.SIMPLE_FLUIDS.get(SimpleFluid.BRINE).getSource(), 3000, true, false)))
+                        .apply(BarrelContentFunction.content(TFCFluids.SIMPLE_FLUIDS.get(SimpleFluid.VINEGAR).getSource(), 3000, true, false)))
         ));
         var chest = LootPool.lootPool()
                         .setRolls(UniformGenerator.between(3, 6));

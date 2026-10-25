@@ -6,6 +6,11 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "tfc:ceramic/vessel",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
           "functions": [
             {
               "amount": 4000,
@@ -24,7 +29,7 @@
             {
               "amount": 4000,
               "brined": false,
-              "fluid": "tfc:brine",
+              "fluid": "tfc:vinegar",
               "fluid_only": true,
               "function": "tfclc:barrel_content"
             }
@@ -38,7 +43,7 @@
             {
               "amount": 2000,
               "brined": false,
-              "fluid": "tfc:vinegar",
+              "fluid": "tfc:brine",
               "fluid_only": true,
               "function": "tfclc:barrel_content"
             }
@@ -96,14 +101,30 @@
               "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 24.0,
-                "min": 8.0
+                "max": 12.0,
+                "min": 4.0
               },
               "function": "minecraft:set_count"
+            },
+            {
+              "amount": 3000,
+              "brined": true,
+              "fluid": "tfc:vinegar",
+              "fluid_only": false,
+              "function": "tfclc:barrel_content"
             }
           ],
-          "name": "tfc:food/wheat_grain",
+          "name": "tfc:food/cooked_pork",
           "weight": 2
+        }
+      ],
+      "functions": [
+        {
+          "amount": 4000,
+          "brined": false,
+          "fluid": "minecraft:milk",
+          "fluid_only": true,
+          "function": "tfclc:barrel_content"
         }
       ],
       "rolls": 1.0
