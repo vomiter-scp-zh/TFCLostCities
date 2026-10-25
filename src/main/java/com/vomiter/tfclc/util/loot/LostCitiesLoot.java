@@ -7,6 +7,10 @@ import net.dries007.tfc.common.blockentities.BarrelBlockEntity;
 import net.dries007.tfc.common.blockentities.IngotPileBlockEntity;
 import net.dries007.tfc.common.blocks.devices.IngotPileBlock;
 import net.dries007.tfc.common.TFCTags;
+import net.dries007.tfc.common.blockentities.PlacedItemBlockEntity;
+import net.dries007.tfc.common.capabilities.VesselLike;
+import net.dries007.tfc.common.items.TFCItems;
+import net.dries007.tfc.common.items.VesselItem;
 import net.dries007.tfc.common.blocks.devices.BarrelBlock;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.fluids.FluidStack;
@@ -32,6 +36,7 @@ import java.util.List;
 
 public final class LostCitiesLoot {
     public static final ResourceLocation TOOL_RACK = Helpers.id("tool_rack/default");
+    public static final ResourceLocation SMALL_VESSEL = Helpers.id("small_vessel/default");
     public static final ResourceLocation BASEMENT_INGOTS = Helpers.id("ingot_pile/basement");
     public static final ResourceLocation RAIL_INGOTS = Helpers.id("ingot_pile/rail");
     public static final ResourceLocation BARREL = Helpers.id("barrel/default");
@@ -82,6 +87,22 @@ public final class LostCitiesLoot {
     public static boolean initialize(ServerLevel level, TFCBlockEntity entity, ResourceLocation table, boolean seal) {
         if (entity instanceof LargeVesselBlockEntity vessel) {
             LostCitiesVesselLootHelper.initializePendingLoot(level, vessel, table, seal);
+            return true;
+        }
+        if (entity instanceof PlacedItemBlockEntity placed) {
+            ItemStack stack = new ItemStack(TFCItems.VESSEL.get());
+            VesselLike vessel = VesselItem.getInventoryVessel(stack);
+            if (vessel == null) {
+                return false;
+            }
+            for (ItemStack generated : roll(level, placed.getBlockPos(), table)) {
+                ItemStack remainder = ItemHandlerHelper.insertItemStacked(vessel, generated, false);
+                if (!remainder.isEmpty()) {
+                    TFCLostCities.LOGGER.warn("Small vessel loot {} could not fit {} at {}", table, remainder, placed.getBlockPos());
+                }
+            }
+            placed.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> handler.insertItem(0, stack, false));
+            placed.markForBlockUpdate();
             return true;
         }
         if (entity instanceof IngotPileBlockEntity pile) {

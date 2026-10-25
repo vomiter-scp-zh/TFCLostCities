@@ -12,6 +12,7 @@
     "postgen.ChunkFixer_PostProcessSpecialBEMixin",
     "postgen.decoration.ChunkFixer_TFCMetalPileDecoratorMixin",
     "postgen.decoration.ChunkFixer_TFCToolRackDecoratorMixin",
+    "postgen.decoration.ChunkFixer_TFCSmallVesselDecoratorMixin",
     "postgen.loot.LostCityTerrainFeature_LootContainerRemapMixin",
     "postgen.loot.LostCityTerrainFeature_TFCVesselLootMixin",
     "postgen.loot.TFCBlockEntity_PendingLootMixin",

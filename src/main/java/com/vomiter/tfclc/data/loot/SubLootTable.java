@@ -52,12 +52,11 @@ public class SubLootTable implements LootTableSubProvider {
                 .add(counted(TFCItems.FOOD.get(Food.COOKED_PORK).get(), 4, 12).setWeight(2)
                         .apply(BarrelContentFunction.content(TFCFluids.SIMPLE_FLUIDS.get(SimpleFluid.BRINE).getSource(), 3000, true, false)))
         ));
-        output.accept(LostCitiesLoot.CHEST, LootTable.lootTable().withPool(LootPool.lootPool()
-                .setRolls(UniformGenerator.between(3, 6))
-                .add(counted(TFCItems.JUTE_FIBER.get(), 2, 8))
-                .add(counted(TFCItems.METAL_ITEMS.get(Metal.Default.COPPER).get(Metal.ItemType.INGOT).get(), 1, 3))
-                .add(counted(TFCItems.METAL_ITEMS.get(Metal.Default.WROUGHT_IRON).get(Metal.ItemType.INGOT).get(), 1, 2))
-                .add(counted(TFCItems.FOOD.get(Food.WHEAT_GRAIN).get(), 3, 10))));
+        var chest = LootPool.lootPool()
+                        .setRolls(UniformGenerator.between(3, 6));
+        TFCItems.CROP_SEEDS.values().forEach(seed -> chest.add(counted(seed.get(), 2, 16)));
+        chest.add(counted(TFCItems.JUTE_FIBER.get(), 2, 8));
+        output.accept(LostCitiesLoot.CHEST, LootTable.lootTable().withPool(chest));
         output.accept(LostCitiesLoot.LARGE_VESSEL, LootTable.lootTable().withPool(LootPool.lootPool()
                 .setRolls(UniformGenerator.between(2, 5))
                 .add(counted(TFCItems.FOOD.get(Food.WHEAT_GRAIN).get(), 4, 12))
@@ -66,7 +65,12 @@ public class SubLootTable implements LootTableSubProvider {
                 .add(counted(TFCItems.FOOD.get(Food.DRIED_KELP).get(), 2, 8))));
         output.accept(LostCitiesLoot.BASEMENT_INGOTS, ingots(5, 24, Metal.Default.COPPER, Metal.Default.TIN, Metal.Default.ZINC, Metal.Default.WROUGHT_IRON));
         output.accept(LostCitiesLoot.RAIL_INGOTS, ingots(6, 24, Metal.Default.NICKEL, Metal.Default.BISMUTH, Metal.Default.GOLD, Metal.Default.SILVER));
-
+        output.accept(LostCitiesLoot.SMALL_VESSEL, LootTable.lootTable().withPool(LootPool.lootPool()
+                        .setRolls(UniformGenerator.between(1, 4))
+                        .add(counted(TFCItems.FOOD.get(Food.WHEAT_GRAIN).get(), 2, 8))
+                        .add(counted(TFCItems.FOOD.get(Food.RICE_GRAIN).get(), 2, 8))
+                        .add(counted(TFCItems.FOOD.get(Food.DRIED_KELP).get(), 2, 6))
+                        .add(counted(TFCItems.JUTE_FIBER.get(), 1, 4))));
     }
 
     private static LootTable.Builder ingots(int min, int max, Metal.Default... metals) {
