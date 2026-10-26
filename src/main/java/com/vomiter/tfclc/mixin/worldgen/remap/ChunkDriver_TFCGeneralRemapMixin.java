@@ -78,7 +78,17 @@ public abstract class ChunkDriver_TFCGeneralRemapMixin {
             at = @At("HEAD"),
             argsOnly = true
     )
-    private BlockState tfclc$remapSetBlockRangeWithPredicate(BlockState state) {
-        return LostCitiesGeneralRemapper.remap(state, null, region);
+    private BlockState tfclc$remapSetBlockRangeWithPredicate(
+            BlockState state,
+            @Local(argsOnly = true, ordinal = 0) int x,
+            @Local(argsOnly = true, ordinal = 1) int y,
+            @Local(argsOnly = true, ordinal = 2) int z
+    ) {
+        BlockPos pos = new BlockPos(
+                primer.getPos().getMinBlockX() + x,
+                y,
+                primer.getPos().getMinBlockZ() + z
+        );
+        return LostCitiesGeneralRemapper.remap(state, pos, region);
     }
 }

@@ -6,6 +6,15 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "functions": [
+            {
+              "amount": 4000,
+              "brined": false,
+              "fluid": "minecraft:milk",
+              "fluid_only": true,
+              "function": "tfclc:barrel_content"
+            }
+          ],
           "name": "tfc:ceramic/vessel",
           "weight": 2
         },
@@ -116,15 +125,6 @@
           ],
           "name": "tfc:food/cooked_pork",
           "weight": 2
-        }
-      ],
-      "functions": [
-        {
-          "amount": 4000,
-          "brined": false,
-          "fluid": "minecraft:milk",
-          "fluid_only": true,
-          "function": "tfclc:barrel_content"
         }
       ],
       "rolls": 1.0

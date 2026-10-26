@@ -1,23 +1,37 @@
 package com.vomiter.tfclc.util;
 
+import mcjty.lostcities.LostCities;
+import mcjty.lostcities.api.ILostChunkInfo;
+import mcjty.lostcities.api.ILostCityInformation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public final class LostCitiesSpawnHelper {
 
     public static boolean shouldDenyNaturalSpawn(ServerLevel level, BlockPos pos, EntityType<?> entityType) {
-        if (!isLikelyLostCitiesRoof(level, pos)) {
+        if (entityType.getCategory() != MobCategory.CREATURE) {
             return false;
         }
 
-        return true;
+        return isLikelyLostCitiesRoof(level, pos);
     }
 
     public static boolean isLikelyLostCitiesRoof(ServerLevel level, BlockPos pos) {
+        ILostCityInformation cityInfo = LostCities.lostCitiesImp.getLostInfo(level);
+        if (cityInfo == null) {
+            return false;
+        }
+        ILostChunkInfo chunkInfo = cityInfo.getChunkInfo(pos.getX() >> 4, pos.getZ() >> 4);
+        if (chunkInfo == null || !chunkInfo.isCity() || chunkInfo.getBuildingType() == null
+                || pos.getY() <= cityInfo.getRealHeight(chunkInfo.getCityLevel()) + 1) {
+            return false;
+        }
+
         BlockPos belowPos = pos.below();
         BlockState below = level.getBlockState(belowPos);
 

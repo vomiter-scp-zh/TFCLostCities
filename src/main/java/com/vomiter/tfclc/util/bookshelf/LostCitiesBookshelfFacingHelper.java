@@ -64,8 +64,9 @@ public final class LostCitiesBookshelfFacingHelper {
             BlockPos candidate = origin.relative(direction, distance);
             if (!shelf(level, origin, candidate)) break;
             // Junctions belong to their own segment, rather than pulling two walls into one row.
-            if (shelf(level, origin, candidate.relative(direction.getClockWise()))
-                    || shelf(level, origin, candidate.relative(direction.getCounterClockWise()))) break;
+            if (direction.getAxis() != Direction.Axis.Y
+                    && (shelf(level, origin, candidate.relative(direction.getClockWise()))
+                    || shelf(level, origin, candidate.relative(direction.getCounterClockWise())))) break;
             row.add(candidate);
         }
     }

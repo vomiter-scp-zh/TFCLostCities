@@ -130,7 +130,7 @@ public class LostCitiesGeneralRemapper {
                 Helpers.id("tfc", "is_ocean")
         );
 
-        if (region.getBiome(pos).is(TFCIsOcean) && state.is(Blocks.WATER)){
+        if (state.is(Blocks.WATER) && pos != null && region.getBiome(pos).is(TFCIsOcean)){
             return TFCBlocks.SALT_WATER.get().defaultBlockState();
         }
 

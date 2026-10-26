@@ -37,8 +37,8 @@ public class SubLootTable implements LootTableSubProvider {
         }
         output.accept(LostCitiesLoot.TOOL_RACK, LootTable.lootTable().withPool(tools));
         output.accept(LostCitiesLoot.BARREL, LootTable.lootTable().withPool(LootPool.lootPool()
-                .add(LootItem.lootTableItem(TFCItems.VESSEL.get()).setWeight(2))
-                        .apply(BarrelContentFunction.content(ForgeMod.MILK.get(), 4000, false, true))
+                .add(LootItem.lootTableItem(TFCItems.VESSEL.get()).setWeight(2)
+                        .apply(BarrelContentFunction.content(ForgeMod.MILK.get(), 4000, false, true)))
                 .add(LootItem.lootTableItem(TFCItems.VESSEL.get()).setWeight(3)
                         .apply(BarrelContentFunction.content(Fluids.WATER, 4000, false, true)))
                 .add(LootItem.lootTableItem(TFCItems.VESSEL.get()).setWeight(2)
