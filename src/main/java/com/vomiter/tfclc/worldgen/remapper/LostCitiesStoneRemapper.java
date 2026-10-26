@@ -1,18 +1,13 @@
 package com.vomiter.tfclc.worldgen.remapper;
 
-import com.vomiter.tfclc.util.stone.LostCitiesProtectionTracker;
 import net.dries007.tfc.common.blocks.TFCBlocks;
 import net.dries007.tfc.common.blocks.rock.Rock;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public final class LostCitiesStoneRemapper {
 
@@ -145,32 +140,6 @@ public final class LostCitiesStoneRemapper {
         }
 
         return state;
-    }
-
-    public static BlockState remapAndMark(LevelAccessor level, BlockPos pos, BlockState state) {
-        final BlockState remapped = remap(state);
-        if (shouldProtect(remapped)) {
-            LostCitiesProtectionTracker.mark(pos.immutable());
-        }
-        return remapped;
-    }
-
-    public static BlockState remapAndMarkRange(LevelAccessor level, int x, int y1, int z, int y2, BlockState state) {
-        final BlockState remapped = remap(state);
-        if (shouldProtect(remapped)) {
-            LostCitiesProtectionTracker.markRange(level, x, y1, z, y2);
-        }
-        return remapped;
-    }
-
-    public static boolean shouldProtect(BlockState state) {
-        if (state == null) {
-            return false;
-        }
-        final ResourceLocation id = ForgeRegistries.BLOCKS.getKey(state.getBlock());
-        return id != null
-                && "tfc".equals(id.getNamespace())
-                && "rock/hardened/andesite".equals(id.getPath());
     }
 
     private static BlockState copyStairProperties(BlockState from, BlockState to) {
