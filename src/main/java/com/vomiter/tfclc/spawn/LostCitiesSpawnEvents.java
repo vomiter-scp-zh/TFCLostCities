@@ -46,7 +46,6 @@ public final class LostCitiesSpawnEvents {
         final MobSpawnType spawnType = event.getSpawnType();
         // 只攔自然生成 / chunk generation 的被動動物
         if (spawnType != MobSpawnType.NATURAL && spawnType != MobSpawnType.CHUNK_GENERATION) {
-            TFCLostCities.LOGGER.info("[TFCLC] {} is not natural", mob);
             return;
         }
         if (!(mob instanceof Animal)) {
@@ -60,7 +59,6 @@ public final class LostCitiesSpawnEvents {
         if(event.getEntity() instanceof Mob mob){
             if(mob.level().isClientSide()) return;
             final BlockPos pos = mob.blockPosition();
-            TFCLostCities.LOGGER.info("[TFCLC] {} is spawning at {}", mob, pos);
             if(toCheckOnRoof.contains(mob) && shouldCancelNonGroundFloorPassiveSpawn(mob.level(), pos)){
                 event.setCanceled(true);
             }
@@ -78,24 +76,20 @@ public final class LostCitiesSpawnEvents {
         try {
             lostInfo = LostCities.lostCitiesImp.getLostInfo(level);
         } catch (ClassCastException e) {
-            TFCLostCities.LOGGER.warn("[TFCLC] Unable to get city info from level");
             return false;
         }
 
         if (lostInfo == null) {
-            TFCLostCities.LOGGER.info("[TFCLC] city info is null");
             return false;
         }
 
         final ILostChunkInfo chunkInfo = lostInfo.getChunkInfo(pos.getX() >> 4, pos.getZ() >> 4);
         if (chunkInfo == null) {
-            TFCLostCities.LOGGER.info("[TFCLC] chunk info is null");
             return false;
         }
 
         // 不在城市 chunk 就不管
         if (!chunkInfo.isCity()) {
-            TFCLostCities.LOGGER.info("[TFCLC] not in city");
             return false;
         }
 
@@ -104,7 +98,6 @@ public final class LostCitiesSpawnEvents {
         // 這個值是樓板高度，實際站立空間通常是 +1
         final int cityGroundY = lostInfo.getRealHeight(chunkInfo.getCityLevel());
         final int allowedFeetY = cityGroundY + 1;
-        TFCLostCities.LOGGER.info("[TFCLC] city ground = {}", cityGroundY);
 
         return pos.getY() > allowedFeetY;
     }

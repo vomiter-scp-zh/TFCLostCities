@@ -78,7 +78,6 @@ public final class LostCitiesTFCToolRackDecorator {
             }
 
             if (tryPlaceToolRack(level, pos, facing, random)) {
-                TFCLostCities.LOGGER.debug("[TFCLC] RACK PLACED AT　{}", pos);
                 placed++;
             }
         }

@@ -69,7 +69,6 @@ public abstract class ChunkFixer_PostProcessSpecialBEMixin {
             lamp.getCapability(Capabilities.FLUID).ifPresent(fluidHandler -> {
                 fluidHandler.fill(new FluidStack(Fluids.LAVA, 250), IFluidHandler.FluidAction.EXECUTE);
                 level.setBlock(pos, level.getBlockState(pos).setValue(LampBlock.LIT, true), 2);
-                TFCLostCities.LOGGER.info("LIT LAVA LAMP AT {}", pos);
             });
         }
     }

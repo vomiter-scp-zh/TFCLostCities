@@ -75,7 +75,6 @@ public final class LostCitiesTFCIngotPileDecorator {
             }
 
             if (tryPlaceIngotPile(level, pos, LostCitiesLoot.BASEMENT_INGOTS)) {
-                TFCLostCities.LOGGER.debug("[TFCLC] Basement ingot pile placed at {}", pos);
                 placed++;
             }
         }
@@ -113,7 +112,6 @@ public final class LostCitiesTFCIngotPileDecorator {
             }
 
             if (tryPlaceIngotPile(level, pos, LostCitiesLoot.RAIL_INGOTS)) {
-                TFCLostCities.LOGGER.debug("[TFCLC] Rail ingot pile placed at {}", pos);
                 placed++;
             }
         }

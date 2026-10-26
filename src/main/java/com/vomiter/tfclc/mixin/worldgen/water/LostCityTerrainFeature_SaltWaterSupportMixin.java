@@ -37,7 +37,6 @@ public abstract class LostCityTerrainFeature_SaltWaterSupportMixin {
     ) {
         var driver = getDriver();
         int y = driver.getY();
-        TFCLostCities.LOGGER.info("[TFCLC][Support] {}", driver.getBlock());
         int height = heightmap.getHeight();
         if (height > 1) {
             while (y > 1 && driver.getBlock().canBeReplaced()) {
