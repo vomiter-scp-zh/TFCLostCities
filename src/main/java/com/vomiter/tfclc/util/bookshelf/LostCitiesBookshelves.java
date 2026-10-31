@@ -48,7 +48,7 @@ public final class LostCitiesBookshelves {
         if (entity instanceof ChiseledBookShelfBlockEntity) return entity;
         CompoundTag saved = chunk.getBlockEntityNbt(pos);
         if (saved != null && !"DUMMY".equals(saved.getString("id"))) {
-            entity = BlockEntity.loadStatic(pos, chunk.getBlockState(pos), saved);
+            entity = BlockEntity.loadStatic(pos, chunk.getBlockState(pos), saved, level.registryAccess());
         }
         if (!(entity instanceof ChiseledBookShelfBlockEntity)) {
             entity = ((EntityBlock) chunk.getBlockState(pos).getBlock()).newBlockEntity(pos, chunk.getBlockState(pos));
@@ -70,7 +70,7 @@ public final class LostCitiesBookshelves {
             long seed = (level instanceof ServerLevel server ? server.getSeed()
                     : level instanceof WorldGenRegion region ? region.getSeed() : 0L)
                     ^ Mth.getSeed(pos) ^ 0x6E624EB7D4C15A3BL;
-            result = LostCitiesBookshelfFiller.fillRandom(shelf, result, RandomSource.create(seed));
+            result = LostCitiesBookshelfFiller.fillRandom(shelf, result, RandomSource.create(seed), level.registryAccess());
         } else {
             // Never overwrite an existing inventory when processing a saved entity.
             for (int i = 0; i < 6; i++) {

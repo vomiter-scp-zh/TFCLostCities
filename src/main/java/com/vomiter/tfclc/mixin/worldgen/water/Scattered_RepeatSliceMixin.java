@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public class Scattered_RepeatSliceMixin {
     @WrapOperation(method = "generateScatteredBuilding", at = @At(value = "INVOKE", target = "Lmcjty/lostcities/worldgen/ChunkDriver;getBlock()Lnet/minecraft/world/level/block/state/BlockState;"))
     private static BlockState tfclc$delegateState(ChunkDriver instance, Operation<BlockState> original){
-        if(original.call(instance).getFluidState().is(TFCTags.Fluids.ANY_WATER)){
+        if(original.call(instance).getFluidState().is(TFCTags.Fluids.ANY_INFINITE_WATER)){
             return Blocks.WATER.defaultBlockState();
         }
         return original.call(instance);

@@ -12,6 +12,7 @@ import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -32,7 +33,10 @@ public final class CityTerrainSmoothingHelper {
 
     private static final int SURFACE_DEPTH = 6;
 
-    private static final BlockState GRASS = TFCBlocks.SOIL.get(SoilBlockType.GRASS).get(SoilBlockType.Variant.LOAM).get().defaultBlockState();
+    private static final BlockState GRASS = TFCBlocks.SOIL.get(SoilBlockType.GRASS).get(SoilBlockType.Variant.ENTISOL).get().defaultBlockState();
+
+    private static final EnumSet<Heightmap.Types> WORLDGEN_HEIGHTMAPS =
+            EnumSet.of(Heightmap.Types.WORLD_SURFACE_WG, Heightmap.Types.OCEAN_FLOOR_WG);
 
     private static final EnumSet<Heightmap.Types> ALL_HEIGHTMAPS =
             EnumSet.of(
@@ -345,6 +349,10 @@ public final class CityTerrainSmoothingHelper {
         int maxBuildHeight = chunk.getMaxBuildHeight();
         if(targetHeightHolder.targetHeight.isEmpty()) return false;
 
+        // At CARVERS/FEATURES, ProtoChunk updates only the final heightmaps.
+        // Refresh the WG maps before using them to locate the original ground.
+        Heightmap.primeHeightmaps(chunk, WORLDGEN_HEIGHTMAPS);
+
         int targetHeight = Math.max(
                 minBuildHeight + SURFACE_DEPTH,
                 Math.min(targetHeightHolder.targetHeight.getAsInt(), maxBuildHeight - 1)
@@ -379,6 +387,19 @@ public final class CityTerrainSmoothingHelper {
                     surface[depth] = chunk.getBlockState(cursor);
                 }
 
+                // A neighbouring chunk may already have decorated this column.
+                // Remove only the land plants rooted on the ground being lowered,
+                // including both halves of tall plants, without touching other blocks.
+                for (int y = surfaceY + 1; y < maxBuildHeight; y++) {
+                    cursor.set(x, y, z);
+                    BlockState decoration = chunk.getBlockState(cursor);
+                    if (!(decoration.getBlock() instanceof BushBlock)
+                            || !decoration.getFluidState().isEmpty()) {
+                        break;
+                    }
+                    chunk.setBlockState(cursor, Blocks.AIR.defaultBlockState(), false);
+                }
+
                 for (int y = localTargetHeight; y <= surfaceY; y++) {
                     cursor.set(x, y, z);
                     chunk.setBlockState(cursor, Blocks.AIR.defaultBlockState(), false);
@@ -404,6 +425,11 @@ public final class CityTerrainSmoothingHelper {
             }
         }
 
+        if (changed) {
+            // TFC plants still query WORLD_SURFACE_WG during decoration. Refresh
+            // every map here so city-only paths and early returns are covered too.
+            primeAllHeightmaps(chunk);
+        }
         return changed;
     }
 

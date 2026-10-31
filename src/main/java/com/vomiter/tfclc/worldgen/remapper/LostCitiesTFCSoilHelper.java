@@ -12,7 +12,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -23,11 +22,11 @@ public final class LostCitiesTFCSoilHelper {
     private static RandomSource randomSource;
 
     // 找不到鄰近 TFC soil 時的保底值
-    private static final SoilBlockType.Variant FALLBACK_VARIANT = SoilBlockType.Variant.LOAM;
+    private static final SoilBlockType.Variant FALLBACK_VARIANT = SoilBlockType.Variant.ENTISOL;
 
     static {
         for (SoilBlockType type : SoilBlockType.values()) {
-            for (Map.Entry<SoilBlockType.Variant, ? extends RegistryObject<Block>> entry : TFCBlocks.SOIL.get(type).entrySet()) {
+            for (var entry : TFCBlocks.SOIL.get(type).entrySet()) {
                 Block block = entry.getValue().get();
                 BLOCK_TO_VARIANT.put(block, entry.getKey());
                 BLOCK_TO_TYPE.put(block, type);

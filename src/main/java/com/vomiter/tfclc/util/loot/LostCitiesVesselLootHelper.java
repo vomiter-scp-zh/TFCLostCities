@@ -8,10 +8,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import java.util.List;
 
@@ -30,20 +29,19 @@ public final class LostCitiesVesselLootHelper {
 
         List<ItemStack> items = LostCitiesLoot.roll(level, pos, lootId);
 
-        vessel.getCapability(ForgeCapabilities.ITEM_HANDLER, null).ifPresent(handler -> {
-            clear(handler);
+        var handler = vessel.getInventory();
+        clear(handler);
 
-            for (ItemStack stack : items) {
-                if (stack.isEmpty()) {
-                    continue;
-                }
-                ItemStack remain = ItemHandlerHelper.insertItemStacked(handler, stack.copy(), false);
-
-                if (!remain.isEmpty()) {
-                    TFCLostCities.LOGGER.warn("Vessel loot {} could not fit {} at {}", lootId, remain, pos);
-                }
+        for (ItemStack stack : items) {
+            if (stack.isEmpty()) {
+                continue;
             }
-        });
+            ItemStack remain = ItemHandlerHelper.insertItemStacked(handler, stack.copy(), false);
+
+            if (!remain.isEmpty()) {
+                TFCLostCities.LOGGER.warn("Vessel loot {} could not fit {} at {}", lootId, remain, pos);
+            }
+        }
 
         vessel.setChanged();
 

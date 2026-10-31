@@ -15,12 +15,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.RandomState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -31,24 +29,20 @@ import java.util.OptionalInt;
 @Mixin(TFCChunkGenerator.class)
 public abstract class TFCChunkGenerator_CitySmoothingMixin {
 
-    @Inject(
-            method = "applyCarvers",
-            at = @At("RETURN")
-    )
-    private void tfclc$smoothAfterCarvers(
-            WorldGenRegion level,
-            long seed,
-            RandomState randomState,
-            BiomeManager biomeManager,
-            StructureManager structureManager,
+    // At CARVERS, neighbouring chunks only guarantee STRUCTURE_STARTS in 1.21.1.
+    // Lost Cities planning now consults STRUCTURE_REFERENCES, available at FEATURES.
+    // Run before decoration so the terrain is still smoothed before city placement,
+    // ores, erosion, and the other natural decorators.
+    @Inject(method = "applyBiomeDecoration", at = @At("HEAD"))
+    private void tfclc$smoothBeforeDecoration(
+            WorldGenLevel world,
             ChunkAccess chunk,
-            GenerationStep.Carving step,
+            StructureManager structureManager,
             CallbackInfo ci
     ) {
-        if (step != GenerationStep.Carving.AIR) {
+        if (!(world instanceof WorldGenRegion level)) {
             return;
         }
-
 
         LostCityFeature feature = Registration.LOSTCITY_FEATURE.get();
         IDimensionInfo provider = feature.getDimensionInfo(level);
@@ -99,7 +93,6 @@ public abstract class TFCChunkGenerator_CitySmoothingMixin {
 
         if (CityTerrainSmoothingHelper.lowerCurrentChunk(chunk, targetHeight)) {
             chunkData.tfclc$setTerrainSmoothed(true);
-            CityTerrainSmoothingHelper.primeAllHeightmaps(chunk);
         }
     }
 }

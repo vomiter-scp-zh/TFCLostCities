@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.vomiter.tfclc.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
     "BuildingInfoMixin",
     "ChunkAccessAccessor",
@@ -39,10 +39,8 @@
     "worldgen.water.Railways_AdaptTFCWaterMixin",
     "worldgen.water.Scattered_RepeatSliceMixin"
   ],
-  "client": [
-  ],
+  "client": [],
   "injectors": {
     "defaultRequire": 1
-  },
-  "refmap": "tfclc.mixins.refmap.json"
+  }
 }

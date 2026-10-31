@@ -25,7 +25,7 @@ public abstract class ChunkDriver_SaltWaterSupportMixin {
     ) {
         BlockState state = cir.getReturnValue();
 
-        if (state.getFluidState().is(TFCTags.Fluids.ANY_WATER)) {
+        if (state.getFluidState().is(TFCTags.Fluids.ANY_INFINITE_WATER)) {
             cir.setReturnValue(Blocks.WATER.defaultBlockState());
         }
     }

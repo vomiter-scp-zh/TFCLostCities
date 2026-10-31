@@ -4,6 +4,7 @@ import com.vomiter.tfclc.util.loot.IPendingLootVessel;
 import net.dries007.tfc.common.blockentities.TFCBlockEntity;
 import com.vomiter.tfclc.util.loot.LostCitiesLoot;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -112,13 +113,23 @@ public abstract class TFCBlockEntity_PendingLootMixin implements IPendingLootVes
         self.setChanged();
     }
 
+    // ProtoChunk block entities intentionally have no Level until chunk loading.
+    // Keep markForSync's setChanged(), but do not build a packet before attachment.
+    // Inventory and fluid callbacks can reach this path during world generation too.
+    @Inject(method = "sendVanillaUpdatePacket", at = @At("HEAD"), cancellable = true)
+    private void tfclc$skipUnattachedSync(CallbackInfo ci) {
+        if (((TFCBlockEntity) (Object) this).getLevel() == null) {
+            ci.cancel();
+        }
+    }
+
     @Inject(method = "onLoad", at = @At("TAIL"))
     private void tfclc$onLoadTryInit(CallbackInfo ci) {
         tfclc$tryInitializePendingLoot();
     }
 
     @Inject(method = "loadAdditional", at = @At("TAIL"))
-    private void tfclc$loadPendingLoot(CompoundTag tag, CallbackInfo ci) {
+    private void tfclc$loadPendingLoot(CompoundTag tag, HolderLookup.Provider provider, CallbackInfo ci) {
         if (tag.contains(TFCLC_PENDING_LOOT_ID)) {
             this.tfclc$pendingLootId = ResourceLocation.tryParse(tag.getString(TFCLC_PENDING_LOOT_ID));
         } else {
@@ -130,7 +141,7 @@ public abstract class TFCBlockEntity_PendingLootMixin implements IPendingLootVes
     }
 
     @Inject(method = "saveAdditional", at = @At("TAIL"), remap = true)
-    private void tfclc$savePendingLoot(CompoundTag tag, CallbackInfo ci) {
+    private void tfclc$savePendingLoot(CompoundTag tag, HolderLookup.Provider provider, CallbackInfo ci) {
         if (this.tfclc$pendingLootId != null) {
             tag.putString(TFCLC_PENDING_LOOT_ID, this.tfclc$pendingLootId.toString());
         }

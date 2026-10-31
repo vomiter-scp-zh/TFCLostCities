@@ -9,7 +9,6 @@
           "functions": [
             {
               "amount": 4000,
-              "brined": false,
               "fluid": "minecraft:milk",
               "fluid_only": true,
               "function": "tfclc:barrel_content"
@@ -23,7 +22,6 @@
           "functions": [
             {
               "amount": 4000,
-              "brined": false,
               "fluid": "minecraft:water",
               "fluid_only": true,
               "function": "tfclc:barrel_content"
@@ -37,7 +35,6 @@
           "functions": [
             {
               "amount": 4000,
-              "brined": false,
               "fluid": "tfc:vinegar",
               "fluid_only": true,
               "function": "tfclc:barrel_content"
@@ -51,7 +48,6 @@
           "functions": [
             {
               "amount": 2000,
-              "brined": false,
               "fluid": "tfc:brine",
               "fluid_only": true,
               "function": "tfclc:barrel_content"
@@ -73,7 +69,6 @@
             },
             {
               "brined": true,
-              "fluid_only": false,
               "function": "tfclc:barrel_content"
             }
           ],
@@ -96,7 +91,6 @@
               "amount": 3000,
               "brined": true,
               "fluid": "tfc:vinegar",
-              "fluid_only": false,
               "function": "tfclc:barrel_content"
             }
           ],
@@ -119,7 +113,6 @@
               "amount": 3000,
               "brined": true,
               "fluid": "tfc:vinegar",
-              "fluid_only": false,
               "function": "tfclc:barrel_content"
             }
           ],

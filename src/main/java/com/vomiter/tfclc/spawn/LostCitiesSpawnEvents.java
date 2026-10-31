@@ -4,8 +4,6 @@ import com.vomiter.tfclc.TFCLostCities;
 import mcjty.lostcities.LostCities;
 import mcjty.lostcities.api.ILostChunkInfo;
 import mcjty.lostcities.api.ILostCityInformation;
-import net.dries007.tfc.client.model.entity.BoarModel;
-import net.dries007.tfc.client.model.entity.TFCCowModel;
 import net.dries007.tfc.common.blocks.plant.TFCVineBlock;
 import net.dries007.tfc.common.entities.livestock.DairyAnimal;
 import net.dries007.tfc.common.entities.prey.RammingPrey;
@@ -19,15 +17,16 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.VineBlock;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.MobSpawnEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = "tfclc")
+//@EventBusSubscriber(bus = EventBusSubscriber.Bus.FORGE, modid = "tfclc")
 public final class LostCitiesSpawnEvents {
     static List<Mob> toCheckOnRoof = new ArrayList<>();
 
@@ -35,7 +34,7 @@ public final class LostCitiesSpawnEvents {
     }
 
     @SubscribeEvent
-    public static void onFinalizeSpawn(MobSpawnEvent.FinalizeSpawn event) {
+    public static void onFinalizeSpawn(FinalizeSpawnEvent event) {
         var level = event.getLevel();
         if (level.isClientSide()) {
             return;

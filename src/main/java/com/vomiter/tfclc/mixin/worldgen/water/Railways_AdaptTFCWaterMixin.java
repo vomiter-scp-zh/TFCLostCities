@@ -23,14 +23,14 @@ public abstract class Railways_AdaptTFCWaterMixin {
     @WrapOperation(method = "generateRailways", at = @At(value = "INVOKE", target = "Lmcjty/lostcities/worldgen/ChunkDriver;getBlock(III)Lnet/minecraft/world/level/block/state/BlockState;"))
     private static BlockState tfclc$tfcwaterToWater(ChunkDriver instance, int x, int y, int z, Operation<BlockState> original){
         var originalState = original.call(instance, x, y, z);
-        if(originalState.getFluidState().is(TFCTags.Fluids.ANY_WATER)) return Blocks.WATER.defaultBlockState();
+        if(originalState.getFluidState().is(TFCTags.Fluids.ANY_INFINITE_WATER)) return Blocks.WATER.defaultBlockState();
         return originalState;
     }
 
     @WrapOperation(method = "generateRailways", at = @At(value = "INVOKE", target = "Lmcjty/lostcities/worldgen/ChunkDriver;getBlock()Lnet/minecraft/world/level/block/state/BlockState;"))
     private static BlockState tfclc$tfcwaterToWater2(ChunkDriver instance, Operation<BlockState> original){
         var originalState = original.call(instance);
-        if(originalState.getFluidState().is(TFCTags.Fluids.ANY_WATER)) return Blocks.WATER.defaultBlockState();
+        if(originalState.getFluidState().is(TFCTags.Fluids.ANY_INFINITE_WATER)) return Blocks.WATER.defaultBlockState();
         return originalState;
     }
 

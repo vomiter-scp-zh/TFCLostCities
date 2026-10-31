@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.ChainBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
 import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.Registries;
 
 public class LostCitiesGeneralRemapper {
     public static BlockState remap(BlockState state, BlockPos pos, LevelAccessor region) {
@@ -39,12 +39,12 @@ public class LostCitiesGeneralRemapper {
 
         if(state.is(Blocks.GLOWSTONE)){
             LostCitiesPostProcessTracker.add(pos, PendingBlockEntityKind.LAVA_LAMP);
-            return TFCBlocks.METALS.get(Metal.Default.BLUE_STEEL).get(Metal.BlockType.LAMP).get().defaultBlockState();
+            return TFCBlocks.METALS.get(Metal.BLUE_STEEL).get(Metal.BlockType.LAMP).get().defaultBlockState();
         }
 
         if(state.is(Blocks.ENCHANTING_TABLE)){
             return TFCBlocks.METALS
-                    .get(Metal.Default.BISMUTH_BRONZE)
+                    .get(Metal.BISMUTH_BRONZE)
                     .get(Metal.BlockType.ANVIL)
                     .get()
                     .defaultBlockState();
@@ -52,7 +52,7 @@ public class LostCitiesGeneralRemapper {
 
         if(state.is(BlockTags.ANVIL)){
             return TFCBlocks.METALS
-                    .get(Metal.Default.BLACK_BRONZE)
+                    .get(Metal.BLACK_BRONZE)
                     .get(Metal.BlockType.ANVIL)
                     .get()
                     .defaultBlockState();
@@ -93,7 +93,7 @@ public class LostCitiesGeneralRemapper {
 
         if(state.is(Blocks.IRON_BARS)){
             return TFCBlocks.METALS
-                    .get(Metal.Default.WROUGHT_IRON)
+                    .get(Metal.WROUGHT_IRON)
                     .get(Metal.BlockType.BARS).get()
                     .defaultBlockState()
                     .setValue(IronBarsBlock.EAST, state.getValue(IronBarsBlock.EAST))
@@ -104,7 +104,7 @@ public class LostCitiesGeneralRemapper {
 
         if(state.is(Blocks.CHAIN)){
             return TFCBlocks.METALS
-                    .get(Metal.Default.WROUGHT_IRON)
+                    .get(Metal.WROUGHT_IRON)
                     .get(Metal.BlockType.CHAIN).get()
                     .defaultBlockState()
                     .setValue(ChainBlock.AXIS, state.getValue(ChainBlock.AXIS));
@@ -119,14 +119,14 @@ public class LostCitiesGeneralRemapper {
         }
 
         if(state.is(Blocks.IRON_BLOCK)){
-            return TFCBlocks.METALS.get(Metal.Default.WROUGHT_IRON).get(Metal.BlockType.BLOCK).get().defaultBlockState();
+            return TFCBlocks.METALS.get(Metal.WROUGHT_IRON).get(Metal.BlockType.BLOCK).get().defaultBlockState();
         }
 
 
         var woodRemap = LostCitiesWoodRemapper.remapVanillaWood(state);
         if(woodRemap != null && woodRemap != state) return woodRemap;
         var TFCIsOcean = TagKey.create(
-                ForgeRegistries.BIOMES.getRegistryKey(),
+                Registries.BIOME,
                 Helpers.id("tfc", "is_ocean")
         );
 

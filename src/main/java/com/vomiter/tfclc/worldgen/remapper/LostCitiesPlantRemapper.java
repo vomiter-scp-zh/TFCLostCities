@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 public final class LostCitiesPlantRemapper {
@@ -21,7 +21,7 @@ public final class LostCitiesPlantRemapper {
     @Nullable
     public static BlockState remapVanillaPlant(BlockState original) {
         final Block block = original.getBlock();
-        final ResourceLocation id = ForgeRegistries.BLOCKS.getKey(block);
+        final ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
         if (id == null) {
             return null;
         }
@@ -92,7 +92,7 @@ public final class LostCitiesPlantRemapper {
         }
 
         // ---------- short grass / fern / dead bush ----------
-        if (vanilla == Blocks.GRASS) {
+        if (vanilla == Blocks.SHORT_GRASS) {
             return TFCBlocks.PLANTS.get(Plant.BLUEGRASS).get();
         }
         if (vanilla == Blocks.FERN) {

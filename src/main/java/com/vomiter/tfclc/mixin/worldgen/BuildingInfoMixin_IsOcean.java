@@ -8,7 +8,7 @@ import mcjty.lostcities.worldgen.lost.BuildingInfo;
 import net.minecraft.core.Holder;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.Registries;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -17,7 +17,7 @@ public class BuildingInfoMixin_IsOcean {
     @WrapOperation(method = "isOcean", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/Holder;is(Lnet/minecraft/tags/TagKey;)Z"))
     private boolean tfclc$isTFCOcean(Holder<Biome> instance, TagKey<Biome> tTagKey, Operation<Boolean> original){
         var TFCIsOcean = TagKey.create(
-                ForgeRegistries.BIOMES.getRegistryKey(),
+                Registries.BIOME,
                 Helpers.id("tfc", "is_ocean")
         );
         return original.call(instance, TFCIsOcean);

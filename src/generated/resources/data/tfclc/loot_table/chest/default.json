@@ -17,6 +17,81 @@
               "function": "minecraft:set_count"
             }
           ],
+          "name": "tfc:seeds/cassava"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 16.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:seeds/green_bean"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 16.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:seeds/lentil"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 16.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:seeds/peanut"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 16.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:seeds/soybean"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 16.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
           "name": "tfc:seeds/barley"
         },
         {
@@ -167,21 +242,6 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "tfc:seeds/green_bean"
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 16.0,
-                "min": 2.0
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
           "name": "tfc:seeds/potato"
         },
         {
@@ -212,37 +272,7 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "tfc:seeds/soybean"
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 16.0,
-                "min": 2.0
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
           "name": "tfc:seeds/squash"
-        },
-        {
-          "type": "minecraft:item",
-          "functions": [
-            {
-              "add": false,
-              "count": {
-                "type": "minecraft:uniform",
-                "max": 16.0,
-                "min": 2.0
-              },
-              "function": "minecraft:set_count"
-            }
-          ],
-          "name": "tfc:seeds/sugarcane"
         },
         {
           "type": "minecraft:item",
@@ -272,7 +302,7 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "tfc:seeds/jute"
+          "name": "tfc:seeds/red_bell_pepper"
         },
         {
           "type": "minecraft:item",
@@ -287,7 +317,7 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "tfc:seeds/papyrus"
+          "name": "tfc:seeds/yellow_bell_pepper"
         },
         {
           "type": "minecraft:item",
@@ -332,7 +362,7 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "tfc:seeds/red_bell_pepper"
+          "name": "tfc:seeds/alfalfa"
         },
         {
           "type": "minecraft:item",
@@ -347,7 +377,67 @@
               "function": "minecraft:set_count"
             }
           ],
-          "name": "tfc:seeds/yellow_bell_pepper"
+          "name": "tfc:seeds/canola"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 16.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:seeds/radish"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 16.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:seeds/jute"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 16.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:seeds/sugarcane"
+        },
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "type": "minecraft:uniform",
+                "max": 16.0,
+                "min": 2.0
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "tfc:seeds/papyrus"
         },
         {
           "type": "minecraft:item",

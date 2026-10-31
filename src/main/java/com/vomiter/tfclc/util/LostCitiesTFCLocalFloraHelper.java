@@ -3,6 +3,8 @@ package com.vomiter.tfclc.util;
 import net.dries007.tfc.common.blocks.TFCBlocks;
 import net.dries007.tfc.common.blocks.plant.Plant;
 import net.dries007.tfc.world.chunkdata.ChunkData;
+import net.dries007.tfc.util.Helpers;
+import net.dries007.tfc.world.TFCChunkGenerator;
 import net.dries007.tfc.world.chunkdata.ForestType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -26,10 +28,10 @@ public final class LostCitiesTFCLocalFloraHelper {
         }
 
         final ChunkData data = ChunkData.get(level, pos);
-        final float rainfall = data.getRainfall(pos);
-        final float avgTemp = data.getAverageTemp(pos);
+        final float rainfall = data.getAverageRainfall(pos);
+        final float avgTemp = Helpers.adjustAverageTemperatureByElevation(pos.getY(), data.getAverageSeaLevelTemp(pos), TFCChunkGenerator.SEA_LEVEL_Y);
         final ForestType forestType = data.getForestType();
-        final float forestDensity = data.getForestDensity();
+        final float forestDensity = forestType.getDensity() / 4.0f;
 
         final RandomSource random = level.getRandom();
 
@@ -38,7 +40,7 @@ public final class LostCitiesTFCLocalFloraHelper {
         if (forestDensity > 0.2f) tries++;
         if (forestDensity > 0.45f) tries++;
         if (forestDensity > 0.7f) tries++;
-        if (forestType == ForestType.NORMAL || forestType == ForestType.OLD_GROWTH) tries++;
+        if (forestType.isSecondary() || forestType.isPrimary()) tries++;
         if (rainfall > 220f) tries++;
 
         for (int i = 0; i < tries; i++) {
@@ -119,7 +121,7 @@ public final class LostCitiesTFCLocalFloraHelper {
 
         // 濕熱
         if (avgTemp > 22f && rainfall > 260f) {
-            if (forestType == ForestType.NORMAL || forestType == ForestType.OLD_GROWTH || forestDensity > 0.55f) {
+            if (forestType.isSecondary() || forestType.isPrimary() || forestDensity > 0.55f) {
                 return pick(random,
                         Plant.CANNA,
                         Plant.BLUE_GINGER,
@@ -164,7 +166,7 @@ public final class LostCitiesTFCLocalFloraHelper {
         }
 
         // 林地
-        if (forestType == ForestType.NORMAL || forestType == ForestType.OLD_GROWTH || forestDensity > 0.55f) {
+        if (forestType.isSecondary() || forestType.isPrimary() || forestDensity > 0.55f) {
             if (avgTemp > 18f) {
                 return pick(random,
                         Plant.GOLDENROD,

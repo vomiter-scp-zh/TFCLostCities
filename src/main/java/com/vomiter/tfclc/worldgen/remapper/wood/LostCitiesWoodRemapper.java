@@ -8,8 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.ModList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
@@ -87,7 +87,7 @@ public final class LostCitiesWoodRemapper {
     @Nullable
     public static BlockState remapVanillaWood(BlockState original) {
         final Block block = original.getBlock();
-        final ResourceLocation id = ForgeRegistries.BLOCKS.getKey(block);
+        final ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
         if (id == null || !"minecraft".equals(id.getNamespace())) {
             return null;
         }

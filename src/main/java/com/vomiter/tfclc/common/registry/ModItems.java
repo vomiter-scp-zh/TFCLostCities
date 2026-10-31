@@ -1,14 +1,14 @@
 package com.vomiter.tfclc.common.registry;
 
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModItems {
     static DeferredRegister<Item> ITEMS
-            = ModRegistries.createRegistry(ForgeRegistries.ITEMS);
+            = ModRegistries.createRegistry(BuiltInRegistries.ITEM);
 
-    public static final RegistryObject<Item> TEST_ITEM
+    public static final DeferredHolder<Item, Item> TEST_ITEM
             = ITEMS.register("test", () -> new Item(new Item.Properties()));
 }

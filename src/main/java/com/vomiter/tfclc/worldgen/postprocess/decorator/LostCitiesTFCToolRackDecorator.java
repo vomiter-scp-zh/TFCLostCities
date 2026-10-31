@@ -17,7 +17,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -88,8 +88,7 @@ public final class LostCitiesTFCToolRackDecorator {
             .get(Wood.BlockType.TOOL_RACK)
             .get()
             .defaultBlockState()
-            .setValue(ToolRackBlock.FACING, facing)
-            .setValue(ToolRackBlock.WATERLOGGED, false);
+            .setValue(ToolRackBlock.FACING, facing);
 
         if (!rackState.canSurvive(level, pos)) {
             return false;
@@ -135,7 +134,7 @@ public final class LostCitiesTFCToolRackDecorator {
             if (!supportState.isFaceSturdy(level, supportPos, facing)) {
                 continue;
             }
-            if (supportState.is(Tags.Blocks.GLASS)) {
+            if (supportState.is(Tags.Blocks.GLASS_BLOCKS)) {
                 continue;
             }
 

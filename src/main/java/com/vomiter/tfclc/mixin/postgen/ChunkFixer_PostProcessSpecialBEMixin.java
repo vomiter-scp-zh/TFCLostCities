@@ -11,13 +11,12 @@ import mcjty.lostcities.worldgen.ChunkFixer;
 import mcjty.lostcities.worldgen.IDimensionInfo;
 import net.dries007.tfc.common.blockentities.LampBlockEntity;
 import net.dries007.tfc.common.blocks.devices.LampBlock;
-import net.dries007.tfc.common.capabilities.Capabilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -66,10 +65,11 @@ public abstract class ChunkFixer_PostProcessSpecialBEMixin {
     @Unique
     private static void tfclc$processLamp(LevelAccessor level, BlockPos pos) {
         if(level.getBlockEntity(pos) instanceof LampBlockEntity lamp){
-            lamp.getCapability(Capabilities.FLUID).ifPresent(fluidHandler -> {
+            IFluidHandler fluidHandler = lamp.getSidedFluidInventory(null);
+            if (fluidHandler != null) {
                 fluidHandler.fill(new FluidStack(Fluids.LAVA, 250), IFluidHandler.FluidAction.EXECUTE);
                 level.setBlock(pos, level.getBlockState(pos).setValue(LampBlock.LIT, true), 2);
-            });
+            }
         }
     }
 }

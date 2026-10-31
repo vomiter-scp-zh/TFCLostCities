@@ -2,6 +2,7 @@ package com.vomiter.tfclc.util.bookshelf;
 
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +16,7 @@ public final class LostCitiesBookshelfFiller {
     private LostCitiesBookshelfFiller() {
     }
 
-    public static BlockState fillRandom(ChiseledBookShelfBlockEntity bookshelf, BlockState state, RandomSource random) {
+    public static BlockState fillRandom(ChiseledBookShelfBlockEntity bookshelf, BlockState state, RandomSource random, HolderLookup.Provider registries) {
         NonNullList<ItemStack> items = NonNullList.withSize(6, ItemStack.EMPTY);
 
         for (int i = 0; i < 6; i++) {
@@ -30,9 +31,9 @@ public final class LostCitiesBookshelfFiller {
         }
 
         // Preserve custom names, Forge data and other mods' saved fields.
-        CompoundTag tag = bookshelf.saveWithoutMetadata();
-        ContainerHelper.saveAllItems(tag, items, true);
-        bookshelf.load(tag);
+        CompoundTag tag = bookshelf.saveWithoutMetadata(registries);
+        ContainerHelper.saveAllItems(tag, items, true, registries);
+        bookshelf.loadWithComponents(tag, registries);
         bookshelf.setChanged();
 
         return state;
