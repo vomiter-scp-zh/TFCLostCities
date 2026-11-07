@@ -1,6 +1,6 @@
 package com.vomiter.tfclc.mixin.postgen;
 
-import com.vomiter.tfclc.TFCLostCities;
+import com.vomiter.tfclc.util.LostCitiesLamps;
 import com.vomiter.tfclc.util.loot.LostCitiesLoot;
 import mcjty.lostcities.worldgen.lost.BuildingInfo;
 import com.vomiter.tfclc.util.bookshelf.LostCitiesBookshelves;
@@ -9,14 +9,9 @@ import com.vomiter.tfclc.worldgen.postprocess.PendingBlockEntityKind;
 import mcjty.lostcities.varia.ChunkCoord;
 import mcjty.lostcities.worldgen.ChunkFixer;
 import mcjty.lostcities.worldgen.IDimensionInfo;
-import net.dries007.tfc.common.blockentities.LampBlockEntity;
-import net.dries007.tfc.common.blocks.devices.LampBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -52,7 +47,7 @@ public abstract class ChunkFixer_PostProcessSpecialBEMixin {
                     }
                 }
                 case FILLED_BOOKSHELF -> tfclc$processBookshelf(level, pos);
-                case LAVA_LAMP -> tfclc$processLamp(level, pos);
+                case LAVA_LAMP -> LostCitiesLamps.schedule(level, pos);
             }
         }
     }
@@ -62,14 +57,4 @@ public abstract class ChunkFixer_PostProcessSpecialBEMixin {
         LostCitiesBookshelves.initialize(level, pos);
     }
 
-    @Unique
-    private static void tfclc$processLamp(LevelAccessor level, BlockPos pos) {
-        if(level.getBlockEntity(pos) instanceof LampBlockEntity lamp){
-            IFluidHandler fluidHandler = lamp.getSidedFluidInventory(null);
-            if (fluidHandler != null) {
-                fluidHandler.fill(new FluidStack(Fluids.LAVA, 250), IFluidHandler.FluidAction.EXECUTE);
-                level.setBlock(pos, level.getBlockState(pos).setValue(LampBlock.LIT, true), 2);
-            }
-        }
-    }
 }

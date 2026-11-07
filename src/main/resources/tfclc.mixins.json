@@ -10,6 +10,7 @@
     "TFCChunkGenerator_LostCitiesDebugMixin",
     "debug.WorldGenRegion_DebugMixin",
     "postgen.ChunkFixer_PostProcessSpecialBEMixin",
+    "postgen.TFCBlockEntity_PendingLampMixin",
     "postgen.decoration.ChunkFixer_TFCMetalPileDecoratorMixin",
     "postgen.decoration.ChunkFixer_TFCToolRackDecoratorMixin",
     "postgen.decoration.ChunkFixer_TFCSmallVesselDecoratorMixin",
