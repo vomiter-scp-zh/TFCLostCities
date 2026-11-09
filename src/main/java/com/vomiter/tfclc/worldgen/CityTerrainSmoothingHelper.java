@@ -372,7 +372,7 @@ public final class CityTerrainSmoothingHelper {
                 int z = minZ + localZ;
                 int localXsign = Integer.compare(localX, 8);
                 int localZsign = Integer.compare(localZ, 8);
-                int localTargetHeight = targetHeight - (localXsign * targetHeightHolder.xSign * localX + localZsign * targetHeightHolder.zSign * localZsign) * HEIGHT_PER_CHUNK / 16;
+                int localTargetHeight = targetHeight - (localXsign * targetHeightHolder.xSign * localX + localZsign * targetHeightHolder.zSign * localZ) * HEIGHT_PER_CHUNK / 16;
 
                 if (surfaceY <= localTargetHeight) {
                     continue;
