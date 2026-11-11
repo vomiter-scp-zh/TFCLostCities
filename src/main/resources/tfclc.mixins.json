@@ -26,6 +26,7 @@
     "postgen.street.LostCityTerrainFeature_StreetVoidContextMixin",
     "worldgen.BuildingInfoMixin_IsOcean",
     "worldgen.ChunkAccessMixin",
+    "worldgen.ProtoChunk_SmoothedHeightmapsMixin",
     "worldgen.Scattered_ValidMixin",
     "worldgen.remap.BuildingInfo_TFCDoorMixin",
     "worldgen.remap.ChunkDriver_TFCGeneralRemapMixin",
