@@ -4,17 +4,14 @@ import com.vomiter.tfclc.Helpers;
 import mcjty.lostcities.varia.ChunkCoord;
 import mcjty.lostcities.worldgen.IDimensionInfo;
 import mcjty.lostcities.worldgen.lost.BuildingInfo;
-import net.dries007.tfc.common.blocks.TFCBlocks;
 import net.dries007.tfc.common.blocks.GroundcoverBlock;
 import net.dries007.tfc.common.fluids.FluidHelpers;
-import net.dries007.tfc.common.blocks.soil.SoilBlockType;
 import net.dries007.tfc.world.ChunkHeightFiller;
 import net.dries007.tfc.world.TFCChunkGenerator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.QuartPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.WorldGenRegion;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
@@ -42,8 +39,6 @@ public final class CityTerrainSmoothingHelper {
 
     private static final int SURFACE_DEPTH = 6;
     private static final TagKey<Biome> SHOULD_SMOOTH = TagKey.create(Registries.BIOME, Helpers.id("should_smooth"));
-
-    private static final BlockState GRASS = TFCBlocks.SOIL.get(SoilBlockType.GRASS).get(SoilBlockType.Variant.ENTISOL).get().defaultBlockState();
 
     private static final EnumSet<Heightmap.Types> WORLDGEN_HEIGHTMAPS =
             EnumSet.of(Heightmap.Types.WORLD_SURFACE_WG, Heightmap.Types.OCEAN_FLOOR_WG);
@@ -73,29 +68,76 @@ public final class CityTerrainSmoothingHelper {
             return;
         }
 
-        // A corner always uses the same four chunk centers, in the same order.
+        // Gate each shared corner using only its own four chunk centers.
+        // A biome outside the tag can contribute a height once that corner is active.
+        ChunkAccess[][] chunks = new ChunkAccess[3][3];
+        BuildingInfo[][] infos = new BuildingInfo[3][3];
+        boolean[][] triggers = new boolean[3][3];
+        for (int z = 0; z < 3; z++) {
+            for (int x = 0; x < 3; x++) {
+                boolean current = x == 1 && z == 1;
+                ChunkAccess sampledChunk = current ? chunk : level.getChunk(pos.x + x - 1, pos.z + z - 1);
+                BuildingInfo sampledInfo = current ? info : getBuildingInfo(provider, sampledChunk.getPos());
+                chunks[z][x] = sampledChunk;
+                infos[z][x] = sampledInfo;
+                triggers[z][x] = triggersSmoothing(sampledChunk, sampledInfo);
+            }
+        }
+
+        boolean[][] activeCorners = new boolean[2][2];
+        boolean[][] needed = new boolean[3][3];
+        boolean active = false;
+        for (int z = 0; z < 2; z++) {
+            for (int x = 0; x < 2; x++) {
+                boolean enabled = triggers[z][x] || triggers[z][x + 1]
+                        || triggers[z + 1][x] || triggers[z + 1][x + 1];
+                activeCorners[z][x] = enabled;
+                if (enabled) {
+                    active = true;
+                    for (int dz = 0; dz < 2; dz++) {
+                        for (int dx = 0; dx < 2; dx++) {
+                            needed[z + dz][x + dx] = true;
+                        }
+                    }
+                }
+            }
+        }
+        if (!active) {
+            return;
+        }
+
         Map<Long, Integer> naturalHeightCache = new HashMap<>();
         HeightSample[][] samples = new HeightSample[3][3];
         for (int z = 0; z < 3; z++) {
             for (int x = 0; x < 3; x++) {
-                if (x == 1 && z == 1) {
-                    samples[z][x] = sampleCenter(level, provider, generator, chunk, info, naturalHeightCache);
-                } else {
-                    ChunkAccess neighbor = level.getChunk(pos.x + x - 1, pos.z + z - 1);
-                    samples[z][x] = sampleCenter(level, provider, generator, neighbor,
-                            getBuildingInfo(provider, neighbor.getPos()), naturalHeightCache);
-                }
+                samples[z][x] = needed[z][x]
+                        ? sampleCenter(level, provider, generator, chunks[z][x], infos[z][x], naturalHeightCache)
+                        : HeightSample.NONE;
             }
         }
 
         SmoothingProfile profile = new SmoothingProfile(
                 samples[1][1],
-                corner(samples, 0, 0), corner(samples, 1, 0),
-                corner(samples, 0, 1), corner(samples, 1, 1)
+                activeCorners[0][0] ? corner(samples, 0, 0) : HeightSample.NONE,
+                activeCorners[0][1] ? corner(samples, 1, 0) : HeightSample.NONE,
+                activeCorners[1][0] ? corner(samples, 0, 1) : HeightSample.NONE,
+                activeCorners[1][1] ? corner(samples, 1, 1) : HeightSample.NONE
         );
         if (profile.hasCut() && lowerCurrentChunk(level, chunk, profile)) {
             chunkData.tfclc$setTerrainSmoothed(true);
         }
+    }
+
+    private static boolean triggersSmoothing(ChunkAccess chunk, BuildingInfo info) {
+        if (isGeneratedAsCity(info)) {
+            return true;
+        }
+        ChunkPos pos = chunk.getPos();
+        return chunk.getNoiseBiome(
+                QuartPos.fromBlock(pos.getMiddleBlockX()),
+                QuartPos.fromBlock(info.getCityGroundLevel()),
+                QuartPos.fromBlock(pos.getMiddleBlockZ())
+        ).is(SHOULD_SMOOTH);
     }
 
     private static HeightSample sampleCenter(
@@ -108,14 +150,6 @@ public final class CityTerrainSmoothingHelper {
         }
 
         ChunkPos pos = chunk.getPos();
-        if (!chunk.getNoiseBiome(
-                QuartPos.fromBlock(pos.getMiddleBlockX()),
-                QuartPos.fromBlock(floor),
-                QuartPos.fromBlock(pos.getMiddleBlockZ())
-        ).is(SHOULD_SMOOTH)) {
-            return HeightSample.NONE;
-        }
-
         OptionalInt target = findTargetHeight(level, provider, generator, pos, naturalHeightCache);
         return target.isPresent() ? HeightSample.full(target.getAsInt()) : HeightSample.NONE;
     }
@@ -474,11 +508,7 @@ public final class CityTerrainSmoothingHelper {
                     }
 
                     cursor.set(x, y, z);
-                    if (depth == 0 && !surface[depth].is(BlockTags.DIRT)){
-                        chunk.setBlockState(cursor, GRASS, false);
-                    } else {
-                        chunk.setBlockState(cursor, surface[depth], false);
-                    }
+                    chunk.setBlockState(cursor, surface[depth], false);
 
                 }
 
